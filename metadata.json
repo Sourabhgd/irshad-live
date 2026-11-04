@@ -1,0 +1,6 @@
+{
+  "name": "Irshaad",
+  "description": "Transform your images into soulful reflective poetry and evocative Urdu Sher in Hindi and Urdu script.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

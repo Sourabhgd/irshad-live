@@ -1,0 +1,2 @@
+# Google AdSense ads.txt for irshad.live
+google.com, pub-8859410334476721, DIRECT, f08c47fec0942fa0

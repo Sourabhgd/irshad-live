@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Helper Primitives
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(authorId) {
+      return isSignedIn() && request.auth.uid == authorId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'sourabh.dubey@gmail.com' && request.auth.token.email_verified == true;
+    }
+
+    // Schema and boundary validator for Poem entity
+    function isValidPoem(data) {
+      return data.keys().hasAll(['title', 'poem', 'sherUrdu', 'sherHindi', 'authorId', 'authorEmail', 'isPublic', 'createdAt'])
+        && data.keys().hasOnly(['title', 'poem', 'sherUrdu', 'sherHindi', 'authorId', 'authorEmail', 'isPublic', 'createdAt'])
+        && data.title is string && data.title.size() <= 150
+        && data.poem is string && data.poem.size() <= 6000
+        && data.sherUrdu is string && data.sherUrdu.size() <= 1500
+        && data.sherHindi is string && data.sherHindi.size() <= 1500
+        && data.authorId is string && data.authorId.size() <= 128 && data.authorId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.authorId == request.auth.uid
+        && data.authorEmail is string && data.authorEmail.size() <= 200
+        && data.isPublic is bool
+        && (data.createdAt is timestamp);
+    }
+
+    // Poems collection
+    match /poems/{poemId} {
+      allow get: if isValidId(poemId) && (existing().isPublic == true || isOwner(existing().authorId) || isAdmin());
+
+      allow list: if (resource.data.isPublic == true) || (isSignedIn() && resource.data.authorId == request.auth.uid) || isAdmin();
+
+      allow create: if isValidId(poemId)
+        && isSignedIn()
+        && isValidPoem(incoming())
+        && incoming().authorId == request.auth.uid
+        && incoming().createdAt == request.time;
+
+      allow update: if isValidId(poemId)
+        && isSignedIn()
+        && isValidPoem(incoming())
+        && incoming().authorId == existing().authorId
+        && incoming().createdAt == existing().createdAt
+        && (isOwner(existing().authorId) || isAdmin())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'poem', 'sherUrdu', 'sherHindi', 'isPublic']);
+
+      allow delete: if isValidId(poemId)
+        && isSignedIn()
+        && (isOwner(existing().authorId) || isAdmin());
+    }
+  }
+}

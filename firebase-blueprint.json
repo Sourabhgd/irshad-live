@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Poem": {
+      "title": "Poem",
+      "description": "An evocative Nazm and Sher generated from a visual prompt, preserved in the Mehfil.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Short poetic title in Devanagari script",
+          "maxLength": 150
+        },
+        "poem": {
+          "type": "string",
+          "description": "Soulful lyrical Nazm in Hindi/Urdu Devanagari",
+          "maxLength": 6000
+        },
+        "sherUrdu": {
+          "type": "string",
+          "description": "Couplet in authentic Urdu Nastaliq script",
+          "maxLength": 1500
+        },
+        "sherHindi": {
+          "type": "string",
+          "description": "Couplet in Devanagari script",
+          "maxLength": 1500
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the creator",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorEmail": {
+          "type": "string",
+          "description": "Email of the creator",
+          "maxLength": 200
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether this piece is visible in the public Mehfil archive"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation"
+        }
+      },
+      "required": ["title", "poem", "sherUrdu", "sherHindi", "authorId", "authorEmail", "isPublic", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/poems/{poemId}": {
+      "schema": "Poem",
+      "description": "Collection of generated poems and shers shared or saved in the Mehfil"
+    }
+  }
+}
