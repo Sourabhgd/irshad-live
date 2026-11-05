@@ -220,23 +220,21 @@ export async function generateSherStoryVideo(
       ctx.clearRect(0, 0, 1080, 1920);
       ctx.drawImage(img, x, y, currentW, currentH);
 
-      // 2. White band starting from bottom 2/3rd (y ~ 1160px down to 1920px)
-      const bandStartY = 1160;
+      // 2. Black background for the text: alpha starting from 20% (0.20) to 100% (1.00) at the bottom
+      const textTop = urduStartY - 70;
+      const bandStartY = Math.min(1150, textTop - 60);
 
-      // Feathered entry
-      const featherGrad = ctx.createLinearGradient(0, bandStartY - 120, 0, bandStartY);
-      featherGrad.addColorStop(0, 'rgba(255, 255, 255, 0.00)');
-      featherGrad.addColorStop(1, 'rgba(255, 255, 255, 0.20)');
+      // Feathered soft transition above the band
+      const featherGrad = ctx.createLinearGradient(0, bandStartY - 140, 0, bandStartY);
+      featherGrad.addColorStop(0, 'rgba(0, 0, 0, 0.00)');
+      featherGrad.addColorStop(1, 'rgba(0, 0, 0, 0.20)');
       ctx.fillStyle = featherGrad;
-      ctx.fillRect(0, bandStartY - 120, 1080, 120);
+      ctx.fillRect(0, bandStartY - 140, 1080, 140);
 
-      // Main white gradient band
+      // Main black gradient: alpha starting from 20% (0.20) at top to 100% (1.00) at bottom
       const bandGrad = ctx.createLinearGradient(0, bandStartY, 0, 1920);
-      bandGrad.addColorStop(0, 'rgba(255, 255, 255, 0.20)');
-      bandGrad.addColorStop(0.18, 'rgba(255, 255, 255, 0.75)');
-      bandGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.96)');
-      bandGrad.addColorStop(0.48, 'rgba(255, 255, 255, 1.00)');
-      bandGrad.addColorStop(1.00, 'rgba(255, 255, 255, 1.00)');
+      bandGrad.addColorStop(0, 'rgba(0, 0, 0, 0.20)');
+      bandGrad.addColorStop(1, 'rgba(0, 0, 0, 1.00)');
 
       ctx.fillStyle = bandGrad;
       ctx.fillRect(0, bandStartY, 1080, 1920 - bandStartY);
@@ -244,8 +242,8 @@ export async function generateSherStoryVideo(
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // 3. Draw Urdu Sher (bottom-aligned) in logo color #81314A
-      ctx.fillStyle = '#81314A';
+      // 3. Draw Urdu Sher (bottom-aligned) in #C8718D
+      ctx.fillStyle = '#C8718D';
       ctx.font = 'bold 44px "Noto Nastaliq Urdu", serif';
       let currentUrduY = urduStartY;
       for (const line of urduLines) {
@@ -253,8 +251,8 @@ export async function generateSherStoryVideo(
         currentUrduY += urduLineHeight;
       }
 
-      // 4. Draw Hindi Sher (bottom-aligned) in logo color #81314A
-      ctx.fillStyle = '#81314A';
+      // 4. Draw Hindi Sher (bottom-aligned) in #C8718D
+      ctx.fillStyle = '#C8718D';
       ctx.font = '600 33px "Noto Serif Devanagari", serif';
       let currentHindiY = hindiStartY;
       for (const line of hindiLines) {
@@ -276,7 +274,7 @@ export async function generateSherStoryVideo(
         const wave = Math.sin(elapsed * 4 + b * 0.8) * 0.25 + 0.35;
         const barHeight = Math.max(4, (normalized * 0.7 + wave * 0.3) * 26);
 
-        ctx.fillStyle = `rgba(129, 49, 74, ${0.45 + normalized * 0.45})`;
+        ctx.fillStyle = `rgba(200, 113, 141, ${0.45 + normalized * 0.45})`;
         ctx.beginPath();
         if (ctx.roundRect) {
           ctx.roundRect(
@@ -297,8 +295,8 @@ export async function generateSherStoryVideo(
         }
       }
 
-      // 6. Watermark solely: "irshad.live" in logo color #81314A at the bottom
-      ctx.fillStyle = '#81314A';
+      // 6. Watermark solely: "irshad.live" matching the app header background (#F5F2ED) at the bottom
+      ctx.fillStyle = '#F5F2ED';
       ctx.font = '600 28px "Inter", sans-serif';
       ctx.fillText('irshad.live', 540, watermarkY);
 

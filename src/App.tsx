@@ -339,6 +339,11 @@ export default function App() {
       const poetry = await generatePoetry(image, 'image/jpeg');
       setResult(poetry);
       
+      // Pre-generate 9:16 Photo Card with dark gradient & #BA4066 typography for instant sharing
+      generateSherStoryCard(image, poetry.sherUrdu, poetry.sherHindi)
+        .then(cardData => setStoryCardUrl(cardData))
+        .catch(err => console.warn("Failed to pre-generate photo card", err));
+      
       // Auto-generate Voice
       setVoiceLoading(true);
       try {
@@ -1446,9 +1451,9 @@ export default function App() {
                       )
                     ) : (
                       storyCardGenerating ? (
-                        <div className="flex flex-col items-center justify-center gap-3 p-6 text-center text-stone-700 bg-stone-100 w-full h-full">
-                          <Loader2 className="w-8 h-8 text-[#81314A] animate-spin" />
-                          <span className="font-serif italic text-xs sm:text-sm text-stone-600">
+                        <div className="flex flex-col items-center justify-center gap-3 p-6 text-center text-stone-200 bg-black w-full h-full">
+                          <Loader2 className="w-8 h-8 text-[#C8718D] animate-spin" />
+                          <span className="font-serif italic text-xs sm:text-sm text-stone-300">
                             Weaving 9:16 Photo Card...
                           </span>
                         </div>
@@ -1456,7 +1461,7 @@ export default function App() {
                         <img 
                           src={storyCardUrl} 
                           alt="9:16 Sher Story Card" 
-                          className="w-full h-full object-contain select-none bg-stone-100" 
+                          className="w-full h-full object-contain select-none bg-black" 
                         />
                       ) : (
                         <span className="font-serif italic text-xs text-natural-muted">Preparing card...</span>

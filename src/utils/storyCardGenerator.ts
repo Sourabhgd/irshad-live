@@ -63,32 +63,7 @@ export async function generateSherStoryCard(
         const y = Math.min(0, (1920 - img.height * scale) * 0.3);
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-        // 2. White band starting from bottom 2/3rd (starting at y ~ 1160px down to 1920px)
-        // Alpha ranging from 20% (0.2) at the top to 100% (1.0) at the bottom
-        const bandStartY = 1160;
-
-        // Feathered entry above the band for seamless visual fade
-        const featherGrad = ctx.createLinearGradient(0, bandStartY - 120, 0, bandStartY);
-        featherGrad.addColorStop(0, 'rgba(255, 255, 255, 0.00)');
-        featherGrad.addColorStop(1, 'rgba(255, 255, 255, 0.20)');
-        ctx.fillStyle = featherGrad;
-        ctx.fillRect(0, bandStartY - 120, 1080, 120);
-
-        // Main white band with alpha ramping up to solid white for high text contrast
-        const bandGrad = ctx.createLinearGradient(0, bandStartY, 0, 1920);
-        bandGrad.addColorStop(0, 'rgba(255, 255, 255, 0.20)');
-        bandGrad.addColorStop(0.18, 'rgba(255, 255, 255, 0.75)');
-        bandGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.96)');
-        bandGrad.addColorStop(0.48, 'rgba(255, 255, 255, 1.00)');
-        bandGrad.addColorStop(1.00, 'rgba(255, 255, 255, 1.00)');
-
-        ctx.fillStyle = bandGrad;
-        ctx.fillRect(0, bandStartY, 1080, 1920 - bandStartY);
-
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // 3. Bottom-aligned layout calculation
+        // 2. Layout calculations: Bottom-aligned
         // Sequence: Urdu couplet -> Hindi couplet -> irshad.live watermark
         const watermarkY = 1835;
         const gapHindiWatermark = 58;
@@ -108,8 +83,30 @@ export async function generateSherStoryCard(
         const urduEndY = hindiStartY - gapUrduHindi;
         const urduStartY = urduEndY - (urduLines.length - 1) * urduLineHeight;
 
-        // Draw Urdu Sher (bottom-aligned)
-        ctx.fillStyle = '#81314A';
+        // 3. Black background for the text: alpha starting from 20% (0.20) to 100% (1.00) at the bottom
+        const textTop = urduStartY - 70;
+        const bandStartY = Math.min(1150, textTop - 60);
+
+        // Feathered soft transition above the band
+        const featherGrad = ctx.createLinearGradient(0, bandStartY - 140, 0, bandStartY);
+        featherGrad.addColorStop(0, 'rgba(0, 0, 0, 0.00)');
+        featherGrad.addColorStop(1, 'rgba(0, 0, 0, 0.20)');
+        ctx.fillStyle = featherGrad;
+        ctx.fillRect(0, bandStartY - 140, 1080, 140);
+
+        // Main black gradient: alpha starting from 20% (0.20) at top to 100% (1.00) at bottom
+        const bandGrad = ctx.createLinearGradient(0, bandStartY, 0, 1920);
+        bandGrad.addColorStop(0, 'rgba(0, 0, 0, 0.20)');
+        bandGrad.addColorStop(1, 'rgba(0, 0, 0, 1.00)');
+
+        ctx.fillStyle = bandGrad;
+        ctx.fillRect(0, bandStartY, 1080, 1920 - bandStartY);
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // 4. Draw Urdu Sher in #C8718D
+        ctx.fillStyle = '#C8718D';
         ctx.font = 'bold 44px "Noto Nastaliq Urdu", serif';
         let currentUrduY = urduStartY;
         for (const line of urduLines) {
@@ -117,8 +114,8 @@ export async function generateSherStoryCard(
           currentUrduY += urduLineHeight;
         }
 
-        // Draw Hindi Sher (bottom-aligned)
-        ctx.fillStyle = '#81314A';
+        // 5. Draw Hindi Sher in #C8718D
+        ctx.fillStyle = '#C8718D';
         ctx.font = '600 33px "Noto Serif Devanagari", serif';
         let currentHindiY = hindiStartY;
         for (const line of hindiLines) {
@@ -126,8 +123,8 @@ export async function generateSherStoryCard(
           currentHindiY += hindiLineHeight;
         }
 
-        // Draw Watermark solely: "irshad.live" at the bottom
-        ctx.fillStyle = '#81314A';
+        // 6. Draw Watermark solely: "irshad.live" matching the app header background (#F5F2ED)
+        ctx.fillStyle = '#F5F2ED';
         ctx.font = '600 28px "Inter", sans-serif';
         ctx.fillText('irshad.live', 540, watermarkY);
 
