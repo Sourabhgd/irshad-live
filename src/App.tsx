@@ -623,7 +623,7 @@ export default function App() {
       audio.onended = () => setPlaying(false);
       setShowVoiceModal(false);
       await audio.play().catch(e => console.warn("Audio play blocked", e));
-      setFeedbackNotice(`Reciting as ${selectedStyle} (${selectedGender === 'male' ? 'Male' : 'Female'}) • Sitar: ${currentRaga}`);
+      setFeedbackNotice(`Reciting as ${selectedStyle} (${selectedGender === 'male' ? 'Male' : 'Female'}) • Santoor: ${currentRaga}`);
       setTimeout(() => setFeedbackNotice(null), 3500);
     } catch (voiceErr: any) {
       console.warn("Voice generation failed:", voiceErr);
