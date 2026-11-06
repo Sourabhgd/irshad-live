@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import dotenv from "dotenv";
@@ -319,8 +320,63 @@ ${stagedScript}`;
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    const assetsPath = path.join(distPath, "assets");
+
+    // Disable weak mtime-based ETags because Cloud Run Buildpacks zeroes all file mtimes to 1980-01-01,
+    // which otherwise causes every deployment's index.html (1052 bytes) to share the exact same ETag.
+    app.set("etag", false);
+
+    app.use(
+      "/assets",
+      express.static(assetsPath, {
+        etag: false,
+        lastModified: false,
+        maxAge: "1h",
+      })
+    );
+
+    // Fallback if a mobile browser or CDN edge has an older index.html cached and requests a previous hash
+    // (e.g. /assets/index-OLDHASH.js or /assets/index-OLDHASH.css)
+    app.get("/assets/:filename", (req, res) => {
+      try {
+        const requested = req.params.filename || "";
+        const files = fs.existsSync(assetsPath) ? fs.readdirSync(assetsPath) : [];
+        if (requested.endsWith(".js")) {
+          const currentJs = files.find((f) => f.startsWith("index-") && f.endsWith(".js")) || files.find((f) => f.endsWith(".js"));
+          if (currentJs) {
+            res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+            res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+            res.setHeader("CDN-Cache-Control", "no-store");
+            return res.sendFile(path.join(assetsPath, currentJs));
+          }
+        } else if (requested.endsWith(".css")) {
+          const currentCss = files.find((f) => f.startsWith("index-") && f.endsWith(".css")) || files.find((f) => f.endsWith(".css"));
+          if (currentCss) {
+            res.setHeader("Content-Type", "text/css; charset=utf-8");
+            res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+            res.setHeader("CDN-Cache-Control", "no-store");
+            return res.sendFile(path.join(assetsPath, currentCss));
+          }
+        }
+      } catch (e) {
+        console.error("Asset fallback error:", e);
+      }
+      res.status(404).end();
+    });
+
+    app.use(
+      express.static(distPath, {
+        index: false,
+        etag: false,
+        lastModified: false,
+      })
+    );
+
     app.get("*", (_req, res) => {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+      res.setHeader("CDN-Cache-Control", "no-store");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
