@@ -348,6 +348,8 @@ function JaliWoodenPanelPattern() {
 export default function App() {
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [poetryProgress, setPoetryProgress] = useState(0);
+  const [hasLandedOnRendition, setHasLandedOnRendition] = useState(false);
   const [voiceLoading, setVoiceLoading] = useState(false);
   const [result, setResult] = useState<PoetryResult | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -424,6 +426,20 @@ export default function App() {
     return () => clearInterval(interval);
   }, [loading]);
 
+  // Smoothly advance the progress bar inside the Irshad button while poetry is being generated
+  useEffect(() => {
+    if (!loading) return;
+    setPoetryProgress(10);
+    const interval = setInterval(() => {
+      setPoetryProgress((prev) => {
+        if (prev >= 92) return prev;
+        const step = prev < 50 ? 7 : prev < 78 ? 4 : 2;
+        return Math.min(92, prev + step);
+      });
+    }, 350);
+    return () => clearInterval(interval);
+  }, [loading]);
+
   const currentAd = CULTURAL_ADS[activeAdIndex] || CULTURAL_ADS[0];
 
   // Safely request ad refresh from Google AdSense during poetry generation
@@ -441,6 +457,8 @@ export default function App() {
   const reset = () => {
     setImage(null);
     setResult(null);
+    setHasLandedOnRendition(false);
+    setPoetryProgress(0);
     setAudioUrl(null);
     setError(null);
     setVoiceLoading(false);
@@ -492,6 +510,8 @@ export default function App() {
           setImage(rawDataUrl);
         }
         setResult(null);
+        setHasLandedOnRendition(false);
+        setPoetryProgress(0);
         setAudioUrl(null);
         setError(null);
         if (audioRef.current) {
@@ -503,6 +523,8 @@ export default function App() {
       img.onerror = () => {
         setImage(rawDataUrl);
         setResult(null);
+        setHasLandedOnRendition(false);
+        setPoetryProgress(0);
         setAudioUrl(null);
         setError(null);
         if (audioRef.current) {
@@ -548,6 +570,8 @@ export default function App() {
   const handleIrshaad = async () => {
     if (!image) return;
     setLoading(true);
+    setPoetryProgress(10);
+    setHasLandedOnRendition(false);
     setError(null);
     setAudioUrl(null);
     if (audioRef.current) {
@@ -555,6 +579,11 @@ export default function App() {
       audioRef.current = null;
     }
     setPlaying(false);
+
+    // Move viewport to top so the top-aligned button with progress bar and the ad 100px below it are immediately visible
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     // Choose a new Raga (Rag Yaman, Rag Darbari, or Rag Malkauns) guaranteed not to repeat the previous one
     let prevRaga: SitarRaga | null = currentRaga;
@@ -584,6 +613,7 @@ export default function App() {
           // Ignore storage errors
         }
       }
+      setPoetryProgress(100);
       setResult(poetry);
       
       // Pre-generate 9:16 Photo Card with dark gradient & #C8718D typography for instant sharing
@@ -591,9 +621,10 @@ export default function App() {
         .then(cardData => setStoryCardUrl(cardData))
         .catch(err => console.warn("Failed to pre-generate photo card", err));
       
-      // Invoke modal dialog to choose voice gender & style once poetry is generated
+      // Invoke modal dialog to choose voice gender & style once poetry is generated, before landing on the final rendition page
       setShowVoiceModal(true);
     } catch (err: any) {
+      setPoetryProgress(0);
       setError(err?.message || "The soul was quiet this time. Please try again.");
       console.error(err);
     } finally {
@@ -622,6 +653,10 @@ export default function App() {
       audio.onpause = () => setPlaying(false);
       audio.onended = () => setPlaying(false);
       setShowVoiceModal(false);
+      setHasLandedOnRendition(true);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       await audio.play().catch(e => console.warn("Audio play blocked", e));
       setFeedbackNotice(`Reciting as ${selectedStyle} (${selectedGender === 'male' ? 'Male' : 'Female'}) • Santoor: ${currentRaga}`);
       setTimeout(() => setFeedbackNotice(null), 3500);
@@ -1035,17 +1070,21 @@ export default function App() {
                   </div>
                 </div>
               </motion.div>
-            ) : !result ? (
-              /* STATE 2: Image placed, awaiting recitation. Irshad button on the RIGHT without card layout */
+            ) : (!result || !hasLandedOnRendition) ? (
+              /* STATE 2: Image placed, awaiting recitation -> Generating with top progress bar button & 100px spaced Ad -> Voice Selection Dialog */
               <motion.div
                 key="image-ready"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="w-full grid grid-cols-1 md:grid-cols-2 gap-[28px] items-start pt-8 sm:pt-12 pb-16"
+                className="w-full grid grid-cols-1 md:grid-cols-2 gap-[28px] items-start pt-6 sm:pt-12 pb-28 md:pb-16"
               >
-                {/* Left Column: Image with center-aligned "Offer new Image" button */}
-                <div className="relative group w-full rounded-2xl overflow-hidden shadow-xl bg-white/70 p-4 sm:p-5 flex flex-col justify-start">
+                {/* Left Column: Image with center-aligned "Offer new Image" button (moves below the button+ad on mobile while generating) */}
+                <div
+                  className={`relative group w-full rounded-2xl overflow-hidden shadow-xl bg-white/70 p-4 sm:p-5 flex flex-col justify-start ${
+                    loading || (result && !hasLandedOnRendition) ? 'order-2 md:order-1' : 'order-1'
+                  }`}
+                >
                   <div className="relative w-full rounded-xl overflow-hidden flex items-start justify-center bg-stone-100/60">
                     <img 
                       src={image} 
@@ -1058,7 +1097,8 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#81314A]/10 hover:bg-[#81314A]/20 text-[#81314A] text-xs font-semibold tracking-wide font-sans transition-all cursor-pointer hover:shadow-xs active:scale-95"
+                      disabled={loading}
+                      className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#81314A]/10 hover:bg-[#81314A]/20 text-[#81314A] text-xs font-semibold tracking-wide font-sans transition-all cursor-pointer hover:shadow-xs active:scale-95 disabled:opacity-50"
                       title="Offer new Image"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -1067,131 +1107,153 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right Column: Uncarded Irshad button at the top */}
-                <div className="flex flex-col justify-between items-center text-center pt-2">
-                  {/* Top part: Irshad action button with yellow text matching the sparkle */}
-                  <div className="w-full flex flex-col items-center">
+                {/* Right Column: Floating bottom button on mobile before click; moves to the top with progress bar + 100px spaced Ad when clicked */}
+                <div
+                  className={`flex flex-col justify-between items-center text-center pt-1 sm:pt-2 ${
+                    loading || (result && !hasLandedOnRendition) ? 'order-1 md:order-2' : 'order-2'
+                  }`}
+                >
+                  {/* Irshad button container: fixed floating at bottom above the image on mobile when idle; moves to top when clicked */}
+                  <motion.div
+                    layout
+                    transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                    className={
+                      loading || (result && !hasLandedOnRendition)
+                        ? 'w-full flex flex-col items-center relative z-20'
+                        : 'fixed bottom-6 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-3rem)] max-w-[300px] md:static md:translate-x-0 md:w-full md:max-w-none flex flex-col items-center'
+                    }
+                  >
                     <button 
                       type="button"
                       onClick={handleIrshaad}
-                      disabled={loading}
-                      className={`px-10 py-4 text-amber-300 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/40 hover:shadow-2xl hover:shadow-black/50 active:scale-95 w-full sm:w-auto ${
-                        loading 
-                          ? 'bg-[#81314A] opacity-100 cursor-wait' 
-                          : 'bg-[#81314A] hover:bg-[#682439] cursor-pointer'
+                      disabled={loading || Boolean(result && !hasLandedOnRendition)}
+                      className={`px-8 sm:px-10 py-3.5 sm:py-4 text-amber-300 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all flex flex-col items-center justify-center shadow-[0_14px_34px_rgba(0,0,0,0.48)] hover:shadow-2xl active:scale-95 ${
+                        loading || (result && !hasLandedOnRendition)
+                          ? 'bg-[#81314A] opacity-100 cursor-wait w-full max-w-[300px]'
+                          : 'bg-[#81314A] hover:bg-[#682439] cursor-pointer w-full md:w-auto'
                       }`}
                       aria-label="Irshad - Generate poetry from vision"
                     >
-                      {loading ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin text-amber-300" />
-                          <span>Breathing Soul...</span>
-                        </>
+                      {loading || (result && !hasLandedOnRendition) ? (
+                        <div className="w-full flex flex-col items-center gap-2">
+                          <div className="flex items-center justify-center gap-2.5">
+                            {loading ? (
+                              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-amber-300 shrink-0" />
+                            ) : (
+                              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
+                            )}
+                            <span>{loading ? 'Breathing Soul...' : 'Verse Composed'}</span>
+                            <span className="text-[11px] font-mono text-amber-200/90">
+                              {poetryProgress}%
+                            </span>
+                          </div>
+                          {/* Progress Bar inside the button */}
+                          <div className="w-full h-1.5 bg-black/35 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-amber-300 rounded-full transition-all duration-300 ease-out"
+                              style={{ width: `${Math.max(poetryProgress, 8)}%` }}
+                            />
+                          </div>
+                        </div>
                       ) : (
-                        <>
+                        <div className="flex items-center justify-center gap-3">
                           <Sparkles className="w-5 h-5 text-amber-300" />
                           <span>Irshad</span>
-                        </>
+                        </div>
                       )}
                     </button>
-
-                    {loading && (
-                      <p className="font-serif italic text-natural-muted text-xs sm:text-sm mt-3 animate-pulse text-center">
-                        The mehfil listens closely. Weaving verses and couplets...
-                      </p>
-                    )}
-                  </div>
-
-                {/* Bottom part of the box: Advertisement shown ONLY while poetry is being generated (limited to Urdu/Hindi poetry festivals, books & cultural brands) */}
-                {loading ? (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full mt-6 flex flex-col items-center"
-                  >
-                    <div className="w-full max-w-md rounded-xl overflow-hidden border border-natural-border/80 bg-white/95 p-3.5 shadow-md flex flex-col text-left">
-                      <div className="flex items-center justify-between w-full pb-2 mb-2 border-b border-natural-border/40 px-0.5">
-                        <span className="text-[9px] uppercase tracking-widest text-natural-muted font-sans font-semibold">
-                          साहित्यिक विज्ञापन • Cultural Partner
-                        </span>
-                        <span className="text-[9px] text-amber-800/90 bg-amber-50 px-2 py-0.5 rounded font-sans font-medium border border-amber-200/60">
-                          {currentAd.categoryLabelHindi}
-                        </span>
-                      </div>
-
-                      {/* Google AdSense Responsive Unit with Cultural Keywords & Targeting */}
-                      <div className="w-full relative overflow-hidden rounded-lg bg-stone-50/90 border border-natural-border/60 p-3 text-left">
-                        <ins 
-                          className="adsbygoogle"
-                          style={{ display: 'block' }}
-                          data-ad-client="ca-pub-8859410334476721"
-                          data-ad-format="auto"
-                          data-full-width-responsive="true"
-                        />
-
-                        {/* Curated Urdu/Hindi Poetry Festival, Book & Cultural Brand Showcase */}
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-natural-accent bg-natural-accent/10 px-2 py-0.5 rounded-full mb-1">
-                                {currentAd.category === 'book' ? (
-                                  <BookOpen className="w-3 h-3" />
-                                ) : (
-                                  <Calendar className="w-3 h-3" />
-                                )}
-                                {currentAd.categoryLabel}
-                              </span>
-                              <h4 className="text-sm sm:text-base font-serif font-bold text-natural-ink leading-snug">
-                                {currentAd.title}
-                              </h4>
-                            </div>
-                            <span className="urdu-text text-base text-stone-700 leading-none shrink-0" dir="rtl">
-                              {currentAd.titleUrdu}
-                            </span>
-                          </div>
-
-                          <p className="text-xs font-serif text-natural-ink/80 leading-relaxed italic">
-                            {currentAd.subtitle}
-                          </p>
-
-                          <div className="flex items-center justify-between pt-1.5 text-[10px] text-natural-muted border-t border-stone-200/60 mt-0.5">
-                            <span className="font-medium text-stone-600 truncate max-w-[210px]">
-                              ✦ {currentAd.highlight}
-                            </span>
-                            <span className="font-sans font-semibold text-natural-accent hover:underline flex items-center gap-0.5 shrink-0">
-                              {currentAd.linkText}
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Explicit limitation notice & pagination dots */}
-                      <div className="mt-2 pt-1 flex items-center justify-between px-0.5 text-[9px] text-natural-muted/75 font-sans">
-                        <span>Limited to Urdu/Hindi poetry festivals, books & cultural brands</span>
-                        <div className="flex items-center gap-1">
-                          {CULTURAL_ADS.map((_, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setActiveAdIndex(idx)}
-                              className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
-                                idx === activeAdIndex ? 'bg-natural-accent w-3' : 'bg-stone-300'
-                              }`}
-                              title={`View ${CULTURAL_ADS[idx].title}`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
                   </motion.div>
-                ) : (
-                  /* Empty spacer when not generating so the Irshaad button remains comfortably positioned at the top */
-                  <div className="w-full h-8" />
-                )}
-              </div>
-            </motion.div>
-          ) : (
+
+                  {/* Advertisement displayed below the button with a clear spacing of 100px (mt-[100px]) */}
+                  {loading || (result && !hasLandedOnRendition) ? (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="w-full mt-[100px] flex flex-col items-center"
+                    >
+                      <div className="w-full max-w-md rounded-xl overflow-hidden border border-natural-border/80 bg-white/95 p-3.5 shadow-md flex flex-col text-left">
+                        <div className="flex items-center justify-between w-full pb-2 mb-2 border-b border-natural-border/40 px-0.5">
+                          <span className="text-[9px] uppercase tracking-widest text-natural-muted font-sans font-semibold">
+                            साहित्यिक विज्ञापन • Cultural Partner
+                          </span>
+                          <span className="text-[9px] text-amber-800/90 bg-amber-50 px-2 py-0.5 rounded font-sans font-medium border border-amber-200/60">
+                            {currentAd.categoryLabelHindi}
+                          </span>
+                        </div>
+
+                        {/* Google AdSense Responsive Unit with Cultural Keywords & Targeting */}
+                        <div className="w-full relative overflow-hidden rounded-lg bg-stone-50/90 border border-natural-border/60 p-3 text-left">
+                          <ins 
+                            className="adsbygoogle"
+                            style={{ display: 'block' }}
+                            data-ad-client="ca-pub-8859410334476721"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"
+                          />
+
+                          {/* Curated Urdu/Hindi Poetry Festival, Book & Cultural Brand Showcase */}
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-natural-accent bg-natural-accent/10 px-2 py-0.5 rounded-full mb-1">
+                                  {currentAd.category === 'book' ? (
+                                    <BookOpen className="w-3 h-3" />
+                                  ) : (
+                                    <Calendar className="w-3 h-3" />
+                                  )}
+                                  {currentAd.categoryLabel}
+                                </span>
+                                <h4 className="text-sm sm:text-base font-serif font-bold text-natural-ink leading-snug">
+                                  {currentAd.title}
+                                </h4>
+                              </div>
+                              <span className="urdu-text text-base text-stone-700 leading-none shrink-0" dir="rtl">
+                                {currentAd.titleUrdu}
+                              </span>
+                            </div>
+
+                            <p className="text-xs font-serif text-natural-ink/80 leading-relaxed italic">
+                              {currentAd.subtitle}
+                            </p>
+
+                            <div className="flex items-center justify-between pt-1.5 text-[10px] text-natural-muted border-t border-stone-200/60 mt-0.5">
+                              <span className="font-medium text-stone-600 truncate max-w-[210px]">
+                                ✦ {currentAd.highlight}
+                              </span>
+                              <span className="font-sans font-semibold text-natural-accent hover:underline flex items-center gap-0.5 shrink-0">
+                                {currentAd.linkText}
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Explicit limitation notice & pagination dots */}
+                        <div className="mt-2 pt-1 flex items-center justify-between px-0.5 text-[9px] text-natural-muted/75 font-sans">
+                          <span>Limited to Urdu/Hindi poetry festivals, books & cultural brands</span>
+                          <div className="flex items-center gap-1">
+                            {CULTURAL_ADS.map((_, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setActiveAdIndex(idx)}
+                                className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
+                                  idx === activeAdIndex ? 'bg-natural-accent w-3' : 'bg-stone-300'
+                                }`}
+                                title={`View ${CULTURAL_ADS[idx].title}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    /* Empty spacer when not generating so the Irshaad button remains comfortably positioned at the top on desktop */
+                    <div className="hidden md:block w-full h-8" />
+                  )}
+                </div>
+              </motion.div>
+            ) : (
             /* STATE 3: Recited Result. Left: Image & recitation audio. Right: Poetry and Sher */
               <motion.div
                 key="result-view"
@@ -1912,7 +1974,10 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
             onClick={() => {
-              if (!voiceLoading) setShowVoiceModal(false);
+              if (!voiceLoading) {
+                setShowVoiceModal(false);
+                if (result) setHasLandedOnRendition(true);
+              }
             }}
           >
             <motion.div
@@ -1935,7 +2000,10 @@ export default function App() {
                 {!voiceLoading && (
                   <button
                     type="button"
-                    onClick={() => setShowVoiceModal(false)}
+                    onClick={() => {
+                      setShowVoiceModal(false);
+                      if (result) setHasLandedOnRendition(true);
+                    }}
                     className="p-1.5 rounded-full text-natural-muted hover:text-natural-ink hover:bg-black/5 transition-colors cursor-pointer"
                     aria-label="Close"
                   >

@@ -46,45 +46,45 @@ function getSantoorRagaConfiguration(raga: ClassicalRaga): {
   strokes: SantoorStroke[];
 } {
   // Tonic Sa = D4 (293.66 Hz), Lower Sa = D3 (146.83 Hz), Upper Sa = D5 (587.33 Hz)
+  // Lively Jod/Gat rhythmic tempo with brisk Kalam mallet rebounds
   if (raga === "Rag Darbari") {
     // Rag Darbari Kanada on Santoor: Sa, Re, Komal Ga, Ma, Pa, Komal Dha, Komal Ni
-    // Delicate Kalam mallet tremolos on Komal Ga (349.23 Hz) and Komal Dha (466.16 Hz)
     return {
       droneFreqs: [146.83, 220.0, 293.66], // Sa3 - Pa3 - Sa4
       strokes: [
-        { freq: 293.66, durSec: 0.95, vel: 0.85, rebounds: [{ offsetSec: 0.24, relVel: 0.55 }] }, // Sa4
-        { freq: 329.63, durSec: 0.9, vel: 0.88, rebounds: [{ offsetSec: 0.22, relVel: 0.5 }] }, // Re4
+        { freq: 293.66, durSec: 0.48, vel: 0.85, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Sa4
+        { freq: 329.63, durSec: 0.44, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Re4
         {
           freq: 349.23,
-          durSec: 1.45,
+          durSec: 0.72,
           vel: 0.92,
           rebounds: [
-            { offsetSec: 0.19, relVel: 0.68 },
-            { offsetSec: 0.38, relVel: 0.48 },
-            { offsetSec: 0.58, relVel: 0.32 },
+            { offsetSec: 0.11, relVel: 0.68 },
+            { offsetSec: 0.22, relVel: 0.48 },
+            { offsetSec: 0.33, relVel: 0.34 },
           ],
-        }, // Komal Ga4 (soft Kalam tremolo)
-        { freq: 329.63, durSec: 0.85, vel: 0.82 }, // Re4
-        { freq: 293.66, durSec: 1.25, vel: 0.9, rebounds: [{ offsetSec: 0.25, relVel: 0.55 }] }, // Sa4
-        { freq: 233.08, durSec: 0.95, vel: 0.8, rebounds: [{ offsetSec: 0.22, relVel: 0.5 }] }, // Mandra Komal Dha3
-        { freq: 261.63, durSec: 0.95, vel: 0.84, rebounds: [{ offsetSec: 0.22, relVel: 0.5 }] }, // Mandra Komal Ni3
-        { freq: 293.66, durSec: 1.2, vel: 0.9 }, // Sa4
-        { freq: 392.0, durSec: 0.9, vel: 0.86 }, // Ma4
-        { freq: 440.0, durSec: 1.05, vel: 0.9, rebounds: [{ offsetSec: 0.23, relVel: 0.55 }] }, // Pa4
+        }, // Komal Ga4 (brisk Kalam tremolo)
+        { freq: 329.63, durSec: 0.42, vel: 0.82, rebounds: [{ offsetSec: 0.11, relVel: 0.48 }] }, // Re4
+        { freq: 293.66, durSec: 0.6, vel: 0.9, rebounds: [{ offsetSec: 0.13, relVel: 0.55 }] }, // Sa4
+        { freq: 233.08, durSec: 0.46, vel: 0.8, rebounds: [{ offsetSec: 0.12, relVel: 0.5 }] }, // Mandra Komal Dha3
+        { freq: 261.63, durSec: 0.46, vel: 0.84, rebounds: [{ offsetSec: 0.12, relVel: 0.5 }] }, // Mandra Komal Ni3
+        { freq: 293.66, durSec: 0.56, vel: 0.9, rebounds: [{ offsetSec: 0.13, relVel: 0.52 }] }, // Sa4
+        { freq: 392.0, durSec: 0.44, vel: 0.86, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Ma4
+        { freq: 440.0, durSec: 0.52, vel: 0.9, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Pa4
         {
           freq: 466.16,
-          durSec: 1.4,
+          durSec: 0.68,
           vel: 0.9,
           rebounds: [
-            { offsetSec: 0.19, relVel: 0.65 },
-            { offsetSec: 0.38, relVel: 0.45 },
+            { offsetSec: 0.11, relVel: 0.65 },
+            { offsetSec: 0.22, relVel: 0.45 },
           ],
         }, // Komal Dha4 (Kalam tremolo)
-        { freq: 440.0, durSec: 0.95, vel: 0.85 }, // Pa4
-        { freq: 392.0, durSec: 0.9, vel: 0.84 }, // Ma4
-        { freq: 349.23, durSec: 1.1, vel: 0.88, rebounds: [{ offsetSec: 0.21, relVel: 0.55 }] }, // Komal Ga4
-        { freq: 329.63, durSec: 0.9, vel: 0.84 }, // Re4
-        { freq: 293.66, durSec: 1.5, vel: 0.92, rebounds: [{ offsetSec: 0.26, relVel: 0.55 }] }, // Sa4
+        { freq: 440.0, durSec: 0.46, vel: 0.85 }, // Pa4
+        { freq: 392.0, durSec: 0.44, vel: 0.84 }, // Ma4
+        { freq: 349.23, durSec: 0.54, vel: 0.88, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Komal Ga4
+        { freq: 329.63, durSec: 0.44, vel: 0.84 }, // Re4
+        { freq: 293.66, durSec: 0.72, vel: 0.92, rebounds: [{ offsetSec: 0.14, relVel: 0.55 }] }, // Sa4
       ],
     };
   }
@@ -94,29 +94,37 @@ function getSantoorRagaConfiguration(raga: ClassicalRaga): {
     return {
       droneFreqs: [146.83, 196.0, 293.66], // Sa3 - Ma3 - Sa4
       strokes: [
-        { freq: 261.63, durSec: 0.95, vel: 0.82, rebounds: [{ offsetSec: 0.23, relVel: 0.5 }] }, // Mandra Komal Ni3
-        { freq: 293.66, durSec: 1.15, vel: 0.9, rebounds: [{ offsetSec: 0.24, relVel: 0.58 }] }, // Sa4
-        { freq: 349.23, durSec: 1.05, vel: 0.88, rebounds: [{ offsetSec: 0.22, relVel: 0.52 }] }, // Komal Ga4
+        { freq: 261.63, durSec: 0.46, vel: 0.82, rebounds: [{ offsetSec: 0.12, relVel: 0.5 }] }, // Mandra Komal Ni3
+        { freq: 293.66, durSec: 0.55, vel: 0.9, rebounds: [{ offsetSec: 0.12, relVel: 0.58 }] }, // Sa4
+        { freq: 349.23, durSec: 0.5, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.52 }] }, // Komal Ga4
         {
           freq: 392.0,
-          durSec: 1.45,
+          durSec: 0.7,
           vel: 0.94,
           rebounds: [
-            { offsetSec: 0.2, relVel: 0.65 },
-            { offsetSec: 0.41, relVel: 0.44 },
+            { offsetSec: 0.11, relVel: 0.65 },
+            { offsetSec: 0.22, relVel: 0.44 },
           ],
         }, // Ma4 (Vadi swara on Santoor)
-        { freq: 349.23, durSec: 0.95, vel: 0.85 }, // Komal Ga4
-        { freq: 293.66, durSec: 1.25, vel: 0.9, rebounds: [{ offsetSec: 0.25, relVel: 0.52 }] }, // Sa4
-        { freq: 392.0, durSec: 0.95, vel: 0.88 }, // Ma4
-        { freq: 466.16, durSec: 1.05, vel: 0.9, rebounds: [{ offsetSec: 0.22, relVel: 0.55 }] }, // Komal Dha4
-        { freq: 523.25, durSec: 1.05, vel: 0.88, rebounds: [{ offsetSec: 0.22, relVel: 0.52 }] }, // Komal Ni4
-        { freq: 587.33, durSec: 1.35, vel: 0.92, rebounds: [{ offsetSec: 0.21, relVel: 0.6 }, { offsetSec: 0.42, relVel: 0.38 }] }, // Taar Sa5
-        { freq: 523.25, durSec: 0.9, vel: 0.85 }, // Komal Ni4
-        { freq: 466.16, durSec: 0.95, vel: 0.86 }, // Komal Dha4
-        { freq: 392.0, durSec: 1.15, vel: 0.9, rebounds: [{ offsetSec: 0.23, relVel: 0.55 }] }, // Ma4
-        { freq: 349.23, durSec: 0.95, vel: 0.85 }, // Komal Ga4
-        { freq: 293.66, durSec: 1.5, vel: 0.92, rebounds: [{ offsetSec: 0.26, relVel: 0.55 }] }, // Sa4
+        { freq: 349.23, durSec: 0.46, vel: 0.85 }, // Komal Ga4
+        { freq: 293.66, durSec: 0.6, vel: 0.9, rebounds: [{ offsetSec: 0.13, relVel: 0.52 }] }, // Sa4
+        { freq: 392.0, durSec: 0.46, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Ma4
+        { freq: 466.16, durSec: 0.5, vel: 0.9, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Komal Dha4
+        { freq: 523.25, durSec: 0.5, vel: 0.88, rebounds: [{ offsetSec: 0.12, relVel: 0.52 }] }, // Komal Ni4
+        {
+          freq: 587.33,
+          durSec: 0.66,
+          vel: 0.92,
+          rebounds: [
+            { offsetSec: 0.11, relVel: 0.6 },
+            { offsetSec: 0.22, relVel: 0.38 },
+          ],
+        }, // Taar Sa5
+        { freq: 523.25, durSec: 0.44, vel: 0.85 }, // Komal Ni4
+        { freq: 466.16, durSec: 0.46, vel: 0.86 }, // Komal Dha4
+        { freq: 392.0, durSec: 0.55, vel: 0.9, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Ma4
+        { freq: 349.23, durSec: 0.46, vel: 0.85 }, // Komal Ga4
+        { freq: 293.66, durSec: 0.72, vel: 0.92, rebounds: [{ offsetSec: 0.14, relVel: 0.55 }] }, // Sa4
       ],
     };
   }
@@ -125,37 +133,45 @@ function getSantoorRagaConfiguration(raga: ClassicalRaga): {
   return {
     droneFreqs: [146.83, 220.0, 293.66], // Sa3 - Pa3 - Sa4
     strokes: [
-      { freq: 277.18, durSec: 0.9, vel: 0.84, rebounds: [{ offsetSec: 0.22, relVel: 0.5 }] }, // Ni3
-      { freq: 329.63, durSec: 0.95, vel: 0.88, rebounds: [{ offsetSec: 0.22, relVel: 0.52 }] }, // Re4
+      { freq: 277.18, durSec: 0.44, vel: 0.84, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Ni3
+      { freq: 329.63, durSec: 0.46, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.52 }] }, // Re4
       {
         freq: 369.99,
-        durSec: 1.4,
+        durSec: 0.68,
         vel: 0.94,
         rebounds: [
-          { offsetSec: 0.2, relVel: 0.66 },
-          { offsetSec: 0.4, relVel: 0.44 },
+          { offsetSec: 0.11, relVel: 0.66 },
+          { offsetSec: 0.22, relVel: 0.44 },
         ],
       }, // Ga4 (Vadi swara Kalam cascade)
-      { freq: 329.63, durSec: 0.9, vel: 0.85 }, // Re4
-      { freq: 293.66, durSec: 1.25, vel: 0.9, rebounds: [{ offsetSec: 0.25, relVel: 0.55 }] }, // Sa4
-      { freq: 415.3, durSec: 0.95, vel: 0.86, rebounds: [{ offsetSec: 0.22, relVel: 0.5 }] }, // Teevra Ma4
-      { freq: 440.0, durSec: 1.15, vel: 0.92, rebounds: [{ offsetSec: 0.22, relVel: 0.58 }] }, // Pa4
-      { freq: 493.88, durSec: 1.0, vel: 0.88 }, // Dha4
-      { freq: 554.37, durSec: 1.0, vel: 0.88, rebounds: [{ offsetSec: 0.21, relVel: 0.52 }] }, // Ni4
-      { freq: 587.33, durSec: 1.35, vel: 0.92, rebounds: [{ offsetSec: 0.2, relVel: 0.6 }, { offsetSec: 0.4, relVel: 0.38 }] }, // Taar Sa5
-      { freq: 493.88, durSec: 0.9, vel: 0.85 }, // Dha4
-      { freq: 440.0, durSec: 0.95, vel: 0.88 }, // Pa4
-      { freq: 415.3, durSec: 0.9, vel: 0.84 }, // Teevra Ma4
-      { freq: 369.99, durSec: 1.1, vel: 0.9, rebounds: [{ offsetSec: 0.22, relVel: 0.55 }] }, // Ga4
-      { freq: 329.63, durSec: 0.9, vel: 0.85 }, // Re4
-      { freq: 293.66, durSec: 1.5, vel: 0.92, rebounds: [{ offsetSec: 0.26, relVel: 0.55 }] }, // Sa4
+      { freq: 329.63, durSec: 0.44, vel: 0.85 }, // Re4
+      { freq: 293.66, durSec: 0.6, vel: 0.9, rebounds: [{ offsetSec: 0.13, relVel: 0.55 }] }, // Sa4
+      { freq: 415.3, durSec: 0.46, vel: 0.86, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Teevra Ma4
+      { freq: 440.0, durSec: 0.55, vel: 0.92, rebounds: [{ offsetSec: 0.12, relVel: 0.58 }] }, // Pa4
+      { freq: 493.88, durSec: 0.48, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.5 }] }, // Dha4
+      { freq: 554.37, durSec: 0.48, vel: 0.88, rebounds: [{ offsetSec: 0.11, relVel: 0.52 }] }, // Ni4
+      {
+        freq: 587.33,
+        durSec: 0.66,
+        vel: 0.92,
+        rebounds: [
+          { offsetSec: 0.11, relVel: 0.6 },
+          { offsetSec: 0.22, relVel: 0.38 },
+        ],
+      }, // Taar Sa5
+      { freq: 493.88, durSec: 0.44, vel: 0.85 }, // Dha4
+      { freq: 440.0, durSec: 0.46, vel: 0.88 }, // Pa4
+      { freq: 415.3, durSec: 0.44, vel: 0.84 }, // Teevra Ma4
+      { freq: 369.99, durSec: 0.54, vel: 0.9, rebounds: [{ offsetSec: 0.12, relVel: 0.55 }] }, // Ga4
+      { freq: 329.63, durSec: 0.44, vel: 0.85 }, // Re4
+      { freq: 293.66, durSec: 0.72, vel: 0.92, rebounds: [{ offsetSec: 0.14, relVel: 0.55 }] }, // Sa4
     ],
   };
 }
 
 /**
  * Helper that renders a single Santoor walnut-mallet (Kalam) strike on a 3-string unison course
- * into the target buffer with authentic shimmering string chorus and long resonant sustain.
+ * into the target buffer with authentic shimmering string chorus and clean articulation at faster tempo.
  */
 function addSantoorMalletStrike(
   buf: Float32Array,
@@ -164,8 +180,8 @@ function addSantoorMalletStrike(
   velocity: number,
   sampleRate: number
 ) {
-  // Each Santoor strike rings out for ~2.6 seconds across the wooden soundbox
-  const ringSamples = Math.floor(2.6 * sampleRate);
+  // Each Santoor strike rings out for ~1.8 seconds across the wooden soundbox for crisp faster-tempo articulation
+  const ringSamples = Math.floor(1.8 * sampleRate);
   // 3 unison strings per bridge course with subtle natural micro-detuning for Santoor shimmer
   const f1 = freq * 0.9989;
   const f2 = freq;
@@ -179,13 +195,13 @@ function addSantoorMalletStrike(
   for (let i = startSample; i < endSample; i++) {
     const t = (i - startSample) / sampleRate;
 
-    // Fast, crisp 4ms wooden Kalam mallet attack
-    const attack = Math.min(1, t / 0.004);
-    // Long, shimmering fundamental sustain + faster-decaying bright mallet harmonics
-    const fundEnv = Math.exp(-t * 1.45);
-    const octEnv = Math.exp(-t * 2.6);
-    const bellEnv = Math.exp(-t * 5.8);
-    const transientEnv = Math.exp(-t * 28.0);
+    // Fast, crisp 3.5ms wooden Kalam mallet attack
+    const attack = Math.min(1, t / 0.0035);
+    // Clean, articulate sustain tailored for brisk Santoor tempo + bright mallet harmonics
+    const fundEnv = Math.exp(-t * 2.15);
+    const octEnv = Math.exp(-t * 3.6);
+    const bellEnv = Math.exp(-t * 7.2);
+    const transientEnv = Math.exp(-t * 32.0);
 
     // 3-string unison course chorus
     const courseFundamental =
@@ -206,9 +222,9 @@ function addSantoorMalletStrike(
 }
 
 /**
- * Synthesizes a mellow, crystalline Hindustani Santoor Alaap in the selected Raga
+ * Synthesizes a lively, crystalline Hindustani Santoor accompaniment in the selected Raga
  * (Rag Yaman, Rag Darbari, or Rag Malkauns) with 3-string unison courses and Kalam mallet rebounds,
- * and mixes it softly behind the 16-bit Mono 24kHz voice PCM at 30% of the voice volume.
+ * and mixes it softly behind the 16-bit Mono 24kHz voice PCM at 16% of the voice volume.
  */
 function createWavDataUriFromPcm(
   base64Pcm: string,
@@ -218,9 +234,9 @@ function createWavDataUriFromPcm(
   const voiceBuf = Buffer.from(base64Pcm, "base64");
   const voiceSamplesCount = Math.floor(voiceBuf.length / 2);
 
-  // Add a brief 0.6s mellow Santoor intro and 1.2s outro tail around the voice
-  const introSamples = Math.floor(sampleRate * 0.6);
-  const outroSamples = Math.floor(sampleRate * 1.2);
+  // Add a brief 0.5s Santoor intro and 1.0s outro tail around the voice
+  const introSamples = Math.floor(sampleRate * 0.5);
+  const outroSamples = Math.floor(sampleRate * 1.0);
   const totalSamples = introSamples + voiceSamplesCount + outroSamples;
 
   const voiceFloat = new Float32Array(totalSamples);
@@ -248,13 +264,13 @@ function createWavDataUriFromPcm(
     let symp = 0;
     for (let d = 0; d < droneFreqs.length; d++) {
       const f = droneFreqs[d];
-      const shimmer = 0.8 + 0.2 * Math.sin(2 * Math.PI * (0.22 + d * 0.08) * t + d);
+      const shimmer = 0.8 + 0.2 * Math.sin(2 * Math.PI * (0.38 + d * 0.12) * t + d);
       symp +=
         shimmer *
         (0.6 * Math.sin(2 * Math.PI * f * t) +
           0.25 * Math.sin(2 * Math.PI * f * 2 * t + 0.5));
     }
-    santoorFloat[i] = symp * 0.045;
+    santoorFloat[i] = symp * 0.035;
   }
 
   // Schedule Santoor Kalam mallet strokes and cascading rebounds across the timeline
@@ -299,12 +315,12 @@ function createWavDataUriFromPcm(
   }
 
   const santoorRms = Math.sqrt(santoorSumSq / Math.max(1, totalSamples)) || 0.1;
-  // Set Santoor volume to 30% of the voice volume
-  const targetSantoorRms = voiceRms * 0.30;
+  // Reduce Santoor volume to 16% of the voice volume so the voice recitation remains crystal clear
+  const targetSantoorRms = voiceRms * 0.16;
   const santoorGain = targetSantoorRms / santoorRms;
 
-  const fadeInSamples = Math.floor(sampleRate * 0.5);
-  const fadeOutSamples = Math.floor(sampleRate * 1.1);
+  const fadeInSamples = Math.floor(sampleRate * 0.4);
+  const fadeOutSamples = Math.floor(sampleRate * 0.9);
 
   const mixedPcmBuffer = Buffer.alloc(totalSamples * 2);
   for (let i = 0; i < totalSamples; i++) {
@@ -318,7 +334,7 @@ function createWavDataUriFromPcm(
     const v = voiceFloat[i];
     const s = santoorFloat[i] * santoorGain * env;
 
-    // Combine voice (100%) + mellow Santoor (30% of voice volume) with soft clipping protection
+    // Combine voice (100%) + gentle Santoor (16% of voice volume) with soft clipping protection
     let mixed = v + s;
     if (mixed > 0.98) {
       mixed = 0.98 + 0.02 * Math.tanh((mixed - 0.98) / 0.02);
