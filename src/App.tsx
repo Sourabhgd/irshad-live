@@ -177,22 +177,23 @@ function ShamaaIcon({
 }
 
 /**
- * White vector architectural Jali paneling pattern inspired by traditional Mughal/Mehfil
- * carved wooden and sandstone screens (stepped quatrefoil border + a single grand pointed
- * ogee arch + interlocking star-and-rosette geometric lattice) drawn in crisp white over the pale paper canvas.
+ * Abstract white vector Jaali illustration featuring two additional rows of the small circular
+ * spandrel Jaali pattern above the central Mughal pointed arch, with a soft vertical fade mask
+ * at the top so the Jaali pattern merges seamlessly into the pale handmade paper background.
  */
 function JaliWoodenPanelPattern() {
-  // Generate x-coordinates for the stepped cross/quatrefoil border along top and bottom rails
-  const topBottomCrosses = Array.from({ length: 28 }, (_, i) => 34 + i * 26.3);
-  // Generate y-coordinates for the stepped cross/quatrefoil border along left and right stiles
-  const sideCrosses = Array.from({ length: 9 }, (_, i) => 44 + i * 26.5);
-
   const cx = 390;
-  const left = 46;
-  const right = 734;
-  // Single grand Mughal pointed ogee arch spanning the entire panel
-  const outerArchPath = `M ${left},256 L ${left},138 C ${left},84 ${cx - 175},56 ${cx},38 C ${cx + 175},56 ${right},84 ${right},138 L ${right},256 Z`;
-  const innerArchPath = `M ${left + 12},256 L ${left + 12},142 C ${left + 12},92 ${cx - 160},66 ${cx},48 C ${cx + 160},66 ${right - 12},92 ${right - 12},142 L ${right - 12},256 Z`;
+  const left = 16;
+  const right = 764;
+  // Two full 40px rows (80px+) of the small circular Jaali pattern above the crown of the arch
+  const spandrelTopY = 0;
+  const archTopY = 92;
+  const bottomY = 458;
+
+  // Central pointed ogee arch shape (without outer rectangular frames)
+  const outerArchPath = `M ${left},${bottomY} L ${left},222 C ${left},154 ${cx - 190},116 ${cx},${archTopY} C ${cx + 190},116 ${right},154 ${right},222 L ${right},${bottomY}`;
+  const innerArchPath = `M ${left + 12},${bottomY} L ${left + 12},226 C ${left + 12},162 ${cx - 175},126 ${cx},${archTopY + 11} C ${cx + 175},126 ${right - 12},162 ${right - 12},226 L ${right - 12},${bottomY}`;
+  const innerArchClipPath = `${innerArchPath} Z`;
 
   return (
     <div
@@ -200,17 +201,29 @@ function JaliWoodenPanelPattern() {
       aria-hidden="true"
     >
       <svg
-        viewBox="0 0 780 296"
+        viewBox="0 0 780 462"
         className="w-full h-auto block"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* Seamless Geometric Star-and-Rosette Jali Lattice Tile (matches inspiration photo) */}
+          {/* Vertical fade gradient & mask so the top of the Jaali merges seamlessly into the background */}
+          <linearGradient id="jaali-top-fade-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
+            <stop offset="8%" stopColor="#FFFFFF" stopOpacity="0.22" />
+            <stop offset="22%" stopColor="#FFFFFF" stopOpacity="0.72" />
+            <stop offset="34%" stopColor="#FFFFFF" stopOpacity="1" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
+          </linearGradient>
+          <mask id="jaali-top-fade-mask">
+            <rect x="0" y="0" width="780" height="462" fill="url(#jaali-top-fade-grad)" />
+          </mask>
+
+          {/* Seamless Geometric Star-and-Rosette Jaali Lattice Tile */}
           <pattern
             id="mehfil-jali-lattice"
-            x="0"
-            y="0"
+            x="3"
+            y="14"
             width="64"
             height="64"
             patternUnits="userSpaceOnUse"
@@ -258,11 +271,11 @@ function JaliWoodenPanelPattern() {
             <circle cx="32" cy="32" r="3.6" stroke="#FFFFFF" strokeWidth="1.8" />
           </pattern>
 
-          {/* Spandrel Jali Pattern for Upper Corners Above the Single Grand Arch */}
+          {/* Small Circular / Spandrel Jaali Pattern Extended by Two Rows Above the Central Arch */}
           <pattern
             id="mehfil-spandrel-lattice"
-            x="0"
-            y="0"
+            x="10"
+            y="12"
             width="40"
             height="40"
             patternUnits="userSpaceOnUse"
@@ -277,83 +290,56 @@ function JaliWoodenPanelPattern() {
               stroke="#FFFFFF"
               strokeWidth="1.6"
             />
+            <circle cx="20" cy="20" r="3.2" stroke="#FFFFFF" strokeWidth="1.4" />
             <line x1="20" y1="0" x2="20" y2="40" stroke="#FFFFFF" strokeWidth="1.5" />
             <line x1="0" y1="20" x2="40" y2="20" stroke="#FFFFFF" strokeWidth="1.5" />
             <line x1="0" y1="0" x2="40" y2="40" stroke="#FFFFFF" strokeWidth="1.5" />
             <line x1="40" y1="0" x2="0" y2="40" stroke="#FFFFFF" strokeWidth="1.5" />
           </pattern>
 
-          {/* Stepped Quatrefoil / Cross Motif from the Outer Frame of the Inspiration Panel */}
-          <g id="stepped-quatrefoil">
-            <path
-              d="M -2,-7.2 H 2 V -4.2 H 4.2 V -2 H 7.2 V 2 H 4.2 V 4.2 H 2 V 7.2 H -2 V 4.2 H -4.2 V 2 H -7.2 V -2 H -4.2 V -4.2 H -2 Z"
-              fill="#FFFFFF"
-            />
-          </g>
-
-          {/* Clip Paths for the Single Grand Panel */}
+          {/* Clip Paths for the Extended Spandrel Lattice and Central Arch */}
           <clipPath id="single-bay-spandrel-clip">
-            <rect x={left} y="38" width={right - left} height="218" />
+            <rect x={left} y={spandrelTopY} width={right - left} height={bottomY - spandrelTopY} />
           </clipPath>
           <clipPath id="single-inner-arch-clip">
-            <path d={innerArchPath} />
+            <path d={innerArchClipPath} />
           </clipPath>
         </defs>
 
-        {/* Outer Panel Frame Molding */}
-        <rect x="4" y="4" width="772" height="288" stroke="#FFFFFF" strokeWidth="3.2" />
-        <rect x="11" y="11" width="758" height="274" stroke="#FFFFFF" strokeWidth="2" />
-        <rect x="33" y="31" width="714" height="234" stroke="#FFFFFF" strokeWidth="2.6" />
-        <rect x="40" y="38" width="700" height="220" stroke="#FFFFFF" strokeWidth="1.8" />
-
-        {/* Stepped Cross / Quatrefoil Frieze along Top & Bottom Perimeter Rails */}
-        {topBottomCrosses.map((x, idx) => (
-          <g key={`tb-cross-${idx}`}>
-            <use href="#stepped-quatrefoil" x={x} y="21" />
-            <use href="#stepped-quatrefoil" x={x} y="275" />
+        <g mask="url(#jaali-top-fade-mask)">
+          {/* Small Circular / Spandrel Jaali Lattice Extended Two Rows Above the Arch */}
+          <g clipPath="url(#single-bay-spandrel-clip)">
+            <rect
+              x={left}
+              y={spandrelTopY}
+              width={right - left}
+              height={bottomY - spandrelTopY}
+              fill="url(#mehfil-spandrel-lattice)"
+            />
           </g>
-        ))}
 
-        {/* Stepped Cross / Quatrefoil Frieze along Left & Right Perimeter Stiles */}
-        {sideCrosses.map((y, idx) => (
-          <g key={`lr-cross-${idx}`}>
-            <use href="#stepped-quatrefoil" x="22" y={y} />
-            <use href="#stepped-quatrefoil" x="758" y={y} />
+          {/* Solid Pale Paper Backing Behind the Central Arch Rib */}
+          <path d={`${outerArchPath} Z`} fill="#FAF6EE" />
+
+          {/* Intricate Star-and-Rosette Jaali Lattice Inside the Central Shape */}
+          <g clipPath="url(#single-inner-arch-clip)">
+            <rect
+              x={left + 12}
+              y={archTopY + 10}
+              width={right - left - 24}
+              height={bottomY - archTopY - 10}
+              fill="url(#mehfil-jali-lattice)"
+            />
           </g>
-        ))}
 
-        {/* Spandrel Latticework in Upper Left & Right Corners Above the Arch */}
-        <g clipPath="url(#single-bay-spandrel-clip)">
-          <rect
-            x={left}
-            y="38"
-            width={right - left}
-            height="218"
-            fill="url(#mehfil-spandrel-lattice)"
-          />
+          {/* Central Arch Shape (Open at the Base, No Outer Rectangular Frame) */}
+          <path d={outerArchPath} stroke="#FFFFFF" strokeWidth="3.6" strokeLinecap="round" />
+          <path d={innerArchPath} stroke="#FFFFFF" strokeWidth="2.4" strokeLinecap="round" />
+
+          {/* Subtle Crown Finial at the Apex of the Central Arch */}
+          <circle cx={cx} cy={archTopY + 2} r="6" fill="#FAF6EE" stroke="#FFFFFF" strokeWidth="2.4" />
+          <circle cx={cx} cy={archTopY + 2} r="2.4" fill="#FFFFFF" />
         </g>
-
-        {/* Solid Pale Paper Backing Behind the Grand Arch Rib */}
-        <path d={outerArchPath} fill="#FAF6EE" />
-
-        {/* Main Star-and-Rosette Jali Lattice Inside the Single Grand Pointed Arch */}
-        <g clipPath="url(#single-inner-arch-clip)">
-          <rect
-            x={left + 12}
-            y="48"
-            width={right - left - 24}
-            height="208"
-            fill="url(#mehfil-jali-lattice)"
-          />
-        </g>
-
-        {/* Carved Grand Arch Ribs (Double-Molded White Vector Arch Frame) */}
-        <path d={outerArchPath} stroke="#FFFFFF" strokeWidth="3.6" />
-        <path d={innerArchPath} stroke="#FFFFFF" strokeWidth="2.4" />
-
-        {/* Carved Floral Rosette Finial at the Crown of the Grand Arch */}
-        <circle cx={cx} cy="40" r="6.5" fill="#FAF6EE" stroke="#FFFFFF" strokeWidth="2.4" />
-        <circle cx={cx} cy="40" r="2.6" fill="#FFFFFF" />
       </svg>
     </div>
   );
