@@ -658,7 +658,7 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
       await audio.play().catch(e => console.warn("Audio play blocked", e));
-      setFeedbackNotice(`Reciting as ${selectedStyle} (${selectedGender === 'male' ? 'Male' : 'Female'}) • Santoor: ${currentRaga}`);
+      setFeedbackNotice(`Reciting as ${selectedStyle} (${selectedGender === 'male' ? 'Male' : 'Female'})`);
       setTimeout(() => setFeedbackNotice(null), 3500);
     } catch (voiceErr: any) {
       console.warn("Voice generation failed:", voiceErr);
