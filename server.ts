@@ -108,17 +108,16 @@ async function startServer() {
 Your poetry is soulful, reflective, and uses resonant metaphors of nature, time, silence, light, and everyday longing.
 
 When provided with an image:
-1. Title (Urdu Script): Create a short, poetic title (2-4 words) in pure Urdu (Nastaliq) script.
-2. Title (English): Provide the poetic English translation of the title.
-3. Sher (Urdu Script): Write one evocative two-line Sher (couplet) in pure Urdu script that captures the absolute essence and soul of the image.
-4. Sher (English Translation): Provide an evocative, poetic two-line English translation of that Sher.
-5. Sher (Hindi Script): Provide the same Sher transliterated in Devanagari (Hindi) script.
-6. Poem / Nazm (Urdu Script): Write a soulful longer free-verse Nazm (60-100 words, 6-10 lines) in pure Urdu script with line breaks (\\n).
-7. Poem / Nazm (English Translation): Provide a faithful, lyrical English translation of the entire longer Nazm with matching line breaks (\\n).
+1. Title (Urdu Script): Create a short, poetic Urdu title (2-4 words) in pure Urdu (Nastaliq) script.
+2. Title (Hindi Script): Write the exact same Urdu title word-for-word in Hindi (Devanagari) script.
+3. Sher (Urdu Script): Write one evocative two-line Urdu Sher (couplet) in pure Urdu (Nastaliq) script that captures the absolute essence and soul of the image.
+4. Sher (Hindi Script): Write the exact same Urdu Sher word-for-word in Hindi (Devanagari) script.
+5. Poem / Nazm (Urdu Script): Write a soulful longer free-verse Urdu Nazm (60-100 words, 6-10 lines) in pure Urdu (Nastaliq) script with line breaks (\\n).
+6. Poem / Nazm (Hindi Script): Write the exact same longer Urdu Nazm word-for-word in Hindi (Devanagari) script with matching line breaks (\\n).
 
-Format the output as JSON with keys: "title", "titleEnglish", "sherUrdu", "sherEnglish", "sherHindi", "poemUrdu", "poemEnglish", "poem". (Set "poem" equal to "poemUrdu").`;
+Format the output as JSON with keys: "title", "titleHindi", "sherUrdu", "sherHindi", "poemUrdu", "poemHindi", "poem". (Set "poem" equal to "poemHindi").`;
 
-      const prompt = "Irshaad. Extract the essence of this image, consult the poetic tradition of the Indian subcontinent, and compose an evocative Sher and Nazm in Urdu along with their lyrical English translations.";
+      const prompt = "Irshaad. Extract the essence of this image, consult the poetic tradition of the Indian subcontinent, and compose an evocative Urdu Sher and Urdu Nazm written in both pure Urdu (Nastaliq) script and Hindi (Devanagari) script.";
 
       const cleanedBase64 = base64Image.includes(",") ? base64Image.split(",")[1] : base64Image;
 
@@ -142,22 +141,20 @@ Format the output as JSON with keys: "title", "titleEnglish", "sherUrdu", "sherE
             type: Type.OBJECT,
             properties: {
               title: { type: Type.STRING },
-              titleEnglish: { type: Type.STRING },
+              titleHindi: { type: Type.STRING },
               poem: { type: Type.STRING },
               poemUrdu: { type: Type.STRING },
-              poemEnglish: { type: Type.STRING },
+              poemHindi: { type: Type.STRING },
               sherUrdu: { type: Type.STRING },
-              sherEnglish: { type: Type.STRING },
               sherHindi: { type: Type.STRING },
             },
             required: [
               "title",
-              "titleEnglish",
+              "titleHindi",
               "poem",
               "poemUrdu",
-              "poemEnglish",
+              "poemHindi",
               "sherUrdu",
-              "sherEnglish",
               "sherHindi",
             ],
           },
@@ -171,7 +168,7 @@ Format the output as JSON with keys: "title", "titleEnglish", "sherUrdu", "sherE
       const parsed = JSON.parse(response.text.trim());
       res.json({
         ...parsed,
-        poem: parsed.poemUrdu || parsed.poem,
+        poem: parsed.poemHindi || parsed.poem,
         raga: assignedRaga,
       });
     } catch (error: any) {

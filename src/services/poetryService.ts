@@ -1,11 +1,13 @@
 export interface PoetryResult {
   poem: string;
   poemUrdu?: string;
+  poemHindi?: string;
   poemEnglish?: string;
   sherUrdu: string;
   sherEnglish?: string;
   sherHindi: string;
   title: string;
+  titleHindi?: string;
   titleEnglish?: string;
   raga?: SitarRaga;
 }

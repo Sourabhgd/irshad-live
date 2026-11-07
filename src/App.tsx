@@ -1330,17 +1330,17 @@ export default function App() {
 
                   {/* Text Content Wrapper with 20px padding (p-[20px]) */}
                   <div className="p-[20px] flex flex-col">
-                    {/* Couplet (Sher): Urdu text followed by English translation (no label, no background color box) */}
+                    {/* Couplet (Sher): Urdu text followed by the same Urdu couplet written in Hindi Devanagari script */}
                     <div className="mb-8 sm:mb-10 pb-8 border-b border-natural-border/50">
                       <div className="urdu-text mb-4 text-[#1A1917] text-[20px] sm:text-[24px] md:text-[28px] text-right leading-[1.8]" dir="rtl">
                         {result.sherUrdu}
                       </div>
-                      <p className="font-serif text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
-                        {result.sherEnglish || result.sherHindi}
+                      <p className="font-hindi text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
+                        {result.sherHindi}
                       </p>
                     </div>
 
-                    {/* Longer Verse (Nazm): Urdu text followed directly below by unhidden English translation in the exact same English text styling */}
+                    {/* Longer Verse (Nazm): Urdu text followed directly below by the same Urdu verse written in Hindi Devanagari script */}
                     <div className="flex-1 flex flex-col justify-start">
                       <h2
                         className="urdu-text font-bold text-[22px] sm:text-[26px] md:text-[30px] leading-[1.8] text-natural-ink mb-5 text-right"
@@ -1357,15 +1357,15 @@ export default function App() {
                         ))}
                       </div>
 
-                      {result.poemEnglish && (
+                      {(result.poemHindi || result.poem) && (
                         <div className="space-y-3 pt-4 border-t border-natural-border/30">
-                          {result.titleEnglish && (
-                            <h3 className="font-serif font-semibold text-black text-base sm:text-lg md:text-xl tracking-wide text-left">
-                              {result.titleEnglish}
+                          {result.titleHindi && (
+                            <h3 className="font-hindi font-bold text-black text-base sm:text-lg md:text-xl tracking-wide text-left">
+                              {result.titleHindi}
                             </h3>
                           )}
-                          <p className="font-serif text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
-                            {result.poemEnglish}
+                          <p className="font-hindi text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
+                            {result.poemHindi || result.poem}
                           </p>
                         </div>
                       )}
@@ -1452,7 +1452,7 @@ export default function App() {
                   <strong className="text-natural-accent font-semibold not-italic">"ارشاد"</strong> (Irshaad) is the traditional call of Urdu mushairas—an eager invitation from the gathering asking the poet to speak, illuminate, and give voice to the quiet spaces of the heart.
                 </p>
                 <p className="text-natural-muted text-xs md:text-sm">
-                  Just as a glowing candle (<em className="font-serif">शमा</em>) is placed before the poet in a mehfil, this canvas invites you to share an image and receive a reflective free-verse poem along with an evocative couplet (<em className="font-serif">शे'र</em>) in Nastaliq Urdu script and English translation, accompanied by the poet's authentic voice.
+                  Just as a glowing candle (<em className="font-serif">शमा</em>) is placed before the poet in a mehfil, this canvas invites you to share an image and receive a reflective free-verse poem along with an evocative couplet (<em className="font-serif">शे'र</em>) in both Nastaliq Urdu and Devanagari Hindi scripts, accompanied by the poet's authentic voice.
                 </p>
                 <div className="p-3.5 rounded-2xl bg-white/60 border border-natural-border/50 text-xs italic text-natural-muted space-y-1">
                   <div className="flex items-center gap-1.5 text-natural-accent font-sans not-italic font-semibold text-[10px] uppercase tracking-wider">
