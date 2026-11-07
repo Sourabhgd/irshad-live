@@ -953,18 +953,18 @@ export default function App() {
           ref={headerRef}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="fixed top-0 left-0 right-0 mx-auto w-full max-w-3xl px-4 sm:px-8 flex justify-between items-center z-40 bg-natural-bg/95 backdrop-blur-md pb-3 sm:pb-4 gap-2 sm:gap-4"
+          className="fixed top-0 left-0 right-0 mx-auto w-full max-w-3xl px-4 sm:px-8 flex justify-between items-center z-40 bg-natural-bg/95 backdrop-blur-md pb-3 sm:pb-4 gap-1.5 sm:gap-4"
         >
           {/* Left: Hindi Devanagari Header in Gotu font with Hindi byline */}
           <div 
-            className="flex flex-col items-start cursor-pointer select-none group shrink-0 pt-[20px]" 
+            className="flex flex-col items-start cursor-pointer select-none group min-w-0 pt-[20px] pl-1 sm:pl-0" 
             onClick={reset} 
             title="इरशाद... — Return to canvas"
           >
-            <h1 className="font-gotu text-2xl sm:text-3xl md:text-5xl font-bold [-webkit-text-stroke:0.65px_#81314A] [text-shadow:_0_0.5px_0_#81314A] tracking-normal text-[#81314A] group-hover:opacity-80 transition-opacity leading-none">
+            <h1 className="font-gotu text-lg sm:text-3xl md:text-5xl font-bold [-webkit-text-stroke:0.65px_#81314A] [text-shadow:_0_0.5px_0_#81314A] tracking-normal text-[#81314A] group-hover:opacity-80 transition-opacity leading-none">
               इरशाद...
             </h1>
-            <span className="font-gotu text-xs sm:text-sm md:text-base text-[#81314A] font-normal tracking-wide mt-1 leading-snug">
+            <span className="font-gotu text-[10px] sm:text-sm md:text-base text-[#81314A] font-normal tracking-wide mt-1 leading-snug">
               रोशनी का हर ज़र्रा एक नज़्म है
             </span>
           </div>
@@ -972,24 +972,24 @@ export default function App() {
           {/* Center: Large Candle Icon Indicating the Shamaa of the Mehfil */}
           <div className="flex flex-col items-center justify-center shrink-0 pt-[20px]">
             <ShamaaIcon 
-              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14" 
+              className="w-9 h-9 sm:w-12 sm:h-12 md:w-14 md:h-14" 
               onClick={() => setShowAbout(true)} 
             />
           </div>
 
-          {/* Right: Urdu Script Irshaad with Urdu byline */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0 pt-[16px] sm:pt-[18px]">
+          {/* Right: Urdu Script Irshaad with Urdu byline and clear right padding on mobile */}
+          <div className="flex items-center gap-2 sm:gap-5 min-w-0 pt-[16px] sm:pt-[18px] pr-3 sm:pr-0">
             <button 
               onClick={() => setShowAbout(true)} 
-              className="group select-none cursor-pointer py-0.5 sm:py-1 px-2 rounded-xl hover:bg-[#81314A]/10 active:scale-95 transition-all text-right flex flex-col items-end"
+              className="group select-none cursor-pointer py-0.5 sm:py-1 px-2 sm:px-2 rounded-xl hover:bg-[#81314A]/10 active:scale-95 transition-all text-right flex flex-col items-end"
               title="ارشاد... — About & Mehfil"
               aria-label="About Irshaad in Urdu"
               dir="rtl"
             >
-              <span className="w-full text-right font-urdu font-black text-3xl sm:text-4xl md:text-5xl text-[#81314A] group-hover:opacity-80 transition-opacity block leading-none drop-shadow-[0_0.5px_0_#81314A] [text-shadow:_0_0.5px_0_#81314A] -translate-y-1.5 sm:-translate-y-2" dir="rtl">
+              <span className="w-full text-right font-urdu font-black text-xl sm:text-4xl md:text-5xl text-[#81314A] group-hover:opacity-80 transition-opacity block leading-none drop-shadow-[0_0.5px_0_#81314A] [text-shadow:_0_0.5px_0_#81314A] -translate-y-1 sm:-translate-y-2" dir="rtl">
                 ارشاد...
               </span>
-              <span className="w-full text-right font-urdu text-xs sm:text-sm md:text-base text-[#81314A] font-semibold block mt-2 sm:mt-2.5 leading-snug" dir="rtl">
+              <span className="w-full text-right font-urdu text-[10px] sm:text-sm md:text-base text-[#81314A] font-semibold block mt-1.5 sm:mt-2.5 leading-snug" dir="rtl">
                 روشنی کا ہر ذرہ ایک نظم ہے
               </span>
             </button>
