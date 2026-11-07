@@ -1031,7 +1031,7 @@ export default function App() {
           </div>
         </motion.header>
 
-        <main className="w-full z-10 flex-1 flex flex-col items-center">
+        <main className="w-full z-20 flex-1 flex flex-col items-center">
           <AnimatePresence mode="wait">
             {!image ? (
               /* STATE 1: Blank tearable diary canvas with Camera icon ABOVE the Hindi Devanagari verse */
@@ -1074,9 +1074,9 @@ export default function App() {
               /* STATE 2: Image placed, awaiting recitation -> Generating with top progress bar button & 100px spaced Ad -> Voice Selection Dialog */
               <motion.div
                 key="image-ready"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 className="w-full grid grid-cols-1 md:grid-cols-2 gap-[28px] items-start pt-6 sm:pt-12 pb-28 md:pb-16"
               >
                 {/* Left Column: Image with center-aligned "Offer new Image" button (moves below the button+ad on mobile while generating) */}
@@ -1107,22 +1107,16 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Right Column: Floating bottom button on mobile before click; moves to the top with progress bar + 100px spaced Ad when clicked */}
+                {/* Right Column: Hidden on mobile before click (since mobile uses the true viewport-fixed bottom floating button); visible at the top on mobile & desktop once clicked */}
                 <div
-                  className={`flex flex-col justify-between items-center text-center pt-1 sm:pt-2 ${
-                    loading || (result && !hasLandedOnRendition) ? 'order-1 md:order-2' : 'order-2'
+                  className={`flex-col justify-between items-center text-center pt-1 sm:pt-2 ${
+                    loading || (result && !hasLandedOnRendition)
+                      ? 'flex order-1 md:order-2'
+                      : 'hidden md:flex order-2'
                   }`}
                 >
-                  {/* Irshad button container: fixed floating at bottom above the image on mobile when idle; moves to top when clicked */}
-                  <motion.div
-                    layout
-                    transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-                    className={
-                      loading || (result && !hasLandedOnRendition)
-                        ? 'w-full flex flex-col items-center relative z-20'
-                        : 'fixed bottom-6 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-3rem)] max-w-[300px] md:static md:translate-x-0 md:w-full md:max-w-none flex flex-col items-center'
-                    }
-                  >
+                  {/* Top button (Desktop idle button OR Mobile+Desktop top loader button with progress bar after click) */}
+                  <div className="w-full flex flex-col items-center relative z-20">
                     <button 
                       type="button"
                       onClick={handleIrshaad}
@@ -1162,7 +1156,7 @@ export default function App() {
                         </div>
                       )}
                     </button>
-                  </motion.div>
+                  </div>
 
                   {/* Advertisement displayed below the button with a clear spacing of 100px (mt-[100px]) */}
                   {loading || (result && !hasLandedOnRendition) ? (
@@ -1965,6 +1959,29 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Mobile Viewport-Fixed Floating Irshad Button: floats at the bottom of the screen above all content on the z-axis (z-[60]) before click */}
+      <AnimatePresence>
+        {image && !loading && !result && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.22 }}
+            className="fixed bottom-6 inset-x-0 z-[60] flex justify-center px-6 pointer-events-none md:hidden"
+          >
+            <button
+              type="button"
+              onClick={handleIrshaad}
+              className="pointer-events-auto px-10 py-4 bg-[#81314A] hover:bg-[#682439] text-amber-300 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all flex items-center justify-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,0.55)] ring-2 ring-white/25 active:scale-95 cursor-pointer w-full max-w-[280px]"
+              aria-label="Irshad - Generate poetry from vision"
+            >
+              <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
+              <span>Irshad</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Voice Selection Modal Dialog (Invoked once poetry is generated) */}
       <AnimatePresence>
         {showVoiceModal && (
@@ -1972,7 +1989,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
             onClick={() => {
               if (!voiceLoading) {
                 setShowVoiceModal(false);
