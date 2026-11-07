@@ -104,18 +104,21 @@ async function startServer() {
       const ai = getAiClient();
       const model = "gemini-3.6-flash";
 
-      const systemInstruction = `You are a world-class Urdu and Hindi poet, master of poignant modern lyrical and free-verse Nazm poetry. 
-Your poetry is surreal, abstract, reflective, and uses deep metaphors of nature, time, silence, and everyday objects (like "khaali botal", "geeli dhoop", "thanda suraj").
+      const systemInstruction = `You are a world-class Urdu poet from the rich literary tradition of the Indian subcontinent—steeped in the classical courtly elegance of Mir Taqi Mir and Mirza Ghalib, the lyrical depth of Gulzar and Kaifi Azmi, and the evocative sensibility of contemporary Urdu poets across India and Pakistan.
+Your poetry is soulful, reflective, and uses resonant metaphors of nature, time, silence, light, and everyday longing.
 
 When provided with an image:
-1. Title: Create a short, poetic title (3-4 words) in Hindi (Devanagari) script.
-2. Poem: Write a soulful poem (Nazm) in an evocative, reflective style (Hindi/Urdu mix) using Hindi (Devanagari) script. Use evocative, abstract metaphors. (80-120 words).
-3. Sher (Urdu Script): Write one evocative Sher (couplet) that captures the absolute soul of the image in pure Urdu script.
-4. Sher (Hindi Script): Provide the same Sher in Devanagari (Hindi) script.
+1. Title (Urdu Script): Create a short, poetic title (2-4 words) in pure Urdu (Nastaliq) script.
+2. Title (English): Provide the poetic English translation of the title.
+3. Sher (Urdu Script): Write one evocative two-line Sher (couplet) in pure Urdu script that captures the absolute essence and soul of the image.
+4. Sher (English Translation): Provide an evocative, poetic two-line English translation of that Sher.
+5. Sher (Hindi Script): Provide the same Sher transliterated in Devanagari (Hindi) script.
+6. Poem / Nazm (Urdu Script): Write a soulful longer free-verse Nazm (60-100 words, 6-10 lines) in pure Urdu script with line breaks (\\n).
+7. Poem / Nazm (English Translation): Provide a faithful, lyrical English translation of the entire longer Nazm with matching line breaks (\\n).
 
-Format the output as JSON with keys: "title", "poem", "sherUrdu", "sherHindi".`;
+Format the output as JSON with keys: "title", "titleEnglish", "sherUrdu", "sherEnglish", "sherHindi", "poemUrdu", "poemEnglish", "poem". (Set "poem" equal to "poemUrdu").`;
 
-      const prompt = "Irshaad. Look at this image and breathe soul into it through evocative poetry and an evocative Sher.";
+      const prompt = "Irshaad. Extract the essence of this image, consult the poetic tradition of the Indian subcontinent, and compose an evocative Sher and Nazm in Urdu along with their lyrical English translations.";
 
       const cleanedBase64 = base64Image.includes(",") ? base64Image.split(",")[1] : base64Image;
 
@@ -139,11 +142,24 @@ Format the output as JSON with keys: "title", "poem", "sherUrdu", "sherHindi".`;
             type: Type.OBJECT,
             properties: {
               title: { type: Type.STRING },
+              titleEnglish: { type: Type.STRING },
               poem: { type: Type.STRING },
+              poemUrdu: { type: Type.STRING },
+              poemEnglish: { type: Type.STRING },
               sherUrdu: { type: Type.STRING },
+              sherEnglish: { type: Type.STRING },
               sherHindi: { type: Type.STRING },
             },
-            required: ["title", "poem", "sherUrdu", "sherHindi"],
+            required: [
+              "title",
+              "titleEnglish",
+              "poem",
+              "poemUrdu",
+              "poemEnglish",
+              "sherUrdu",
+              "sherEnglish",
+              "sherHindi",
+            ],
           },
         },
       });
@@ -153,7 +169,11 @@ Format the output as JSON with keys: "title", "poem", "sherUrdu", "sherHindi".`;
       }
 
       const parsed = JSON.parse(response.text.trim());
-      res.json({ ...parsed, raga: assignedRaga });
+      res.json({
+        ...parsed,
+        poem: parsed.poemUrdu || parsed.poem,
+        raga: assignedRaga,
+      });
     } catch (error: any) {
       console.error("API /api/generate-poetry Error:", error);
       res.status(500).json({ error: error.message || "Failed to generate poetry" });

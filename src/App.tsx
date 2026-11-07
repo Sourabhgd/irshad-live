@@ -73,41 +73,6 @@ const CULTURAL_ADS: CulturalAd[] = [
   },
 ];
 
-function CandleIcon({ className = "w-6 h-6" }: { className?: string }) {
-  return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="1.8" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      {/* Candle flame glow halo with subtle flicker */}
-      <circle cx="12" cy="5" r="4.5" className="fill-amber-400/25 stroke-none flame-halo-anim" />
-      {/* Flickering Flame */}
-      <g className="flame-flicker-group" style={{ transformOrigin: "12px 6.5px" }}>
-        <path 
-          d="M12 2C12.8 3.6 14.2 4.9 14.2 6.5a2.2 2.2 0 1 1-4.4 0C9.8 4.9 11.2 3.6 12 2z" 
-          className="fill-amber-400 stroke-amber-600 transition-colors" 
-        />
-      </g>
-      {/* Wick */}
-      <line x1="12" y1="6.5" x2="12" y2="9.5" stroke="currentColor" strokeWidth="1.5" />
-      {/* Candle Pillar / Wax */}
-      <path 
-        d="M8.5 9.5h7c.3 0 .5.2.5.5v9a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 8 19V10c0-.3.2-.5.5-.5z" 
-        className="fill-natural-bg/90 stroke-current" 
-      />
-      {/* Wax drip detailing */}
-      <path d="M10 9.5v2.2c0 .4.3.7.7.7s.7-.3.7-.7V9.5" strokeWidth="1.2" />
-      {/* Stand / Saucer */}
-      <path d="M5.5 21.5h13" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M7.5 21.5l1-1.5h7l1 1.5" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
 
 function ShamaaIcon({ 
   className = "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14", 
@@ -983,12 +948,12 @@ export default function App() {
       >
         <div className="pointer-events-none absolute inset-0 atmosphere opacity-60" />
         
-        {/* Header without Drop Shadow and with Dotted Tearable Diary Line */}
+        {/* Header without Drop Shadow and without Dotted Line */}
         <motion.header 
           ref={headerRef}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="fixed top-0 left-0 right-0 mx-auto w-full max-w-3xl px-4 sm:px-8 flex justify-between items-center z-40 bg-natural-bg/95 backdrop-blur-md pb-3 sm:pb-4 border-b-[3px] border-dotted border-white gap-2 sm:gap-4"
+          className="fixed top-0 left-0 right-0 mx-auto w-full max-w-3xl px-4 sm:px-8 flex justify-between items-center z-40 bg-natural-bg/95 backdrop-blur-md pb-3 sm:pb-4 gap-2 sm:gap-4"
         >
           {/* Left: Hindi Devanagari Header in Gotu font with Hindi byline */}
           <div 
@@ -1063,37 +1028,29 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Two-line poetic statement in Hindi Devanagari script using Gotu font */}
-                  <div className="text-[14pt] sm:text-[16pt] md:text-[18pt] text-stone-950 font-gotu font-normal max-w-2xl mx-auto leading-relaxed select-none text-center space-y-1">
-                    <p>सौंप दो एक तस्वीर</p>
-                    <p>शायरी की हवाओं को</p>
+                  {/* Two-line poetic statement in Urdu script ("Saunp do ek tasveer / Shayari ki hawaon ko") */}
+                  <div className="urdu-text text-[18pt] sm:text-[20pt] md:text-[22pt] text-stone-950 font-normal max-w-2xl mx-auto leading-[1.9] select-none text-center space-y-1" dir="rtl">
+                    <p>سونپ دو ایک تصویر</p>
+                    <p>شاعری کی ہواؤں کو</p>
                   </div>
                 </div>
               </motion.div>
             ) : (!result || !hasLandedOnRendition) ? (
-              /* STATE 2: Image placed, awaiting recitation -> Generating with top progress bar button & 100px spaced Ad -> Voice Selection Dialog */
+              /* STATE 2: Image placed, awaiting recitation -> Generating with top focused loader & 100px spaced Ad -> Voice Selection Dialog */
               <motion.div
                 key="image-ready"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="w-full grid grid-cols-1 md:grid-cols-2 gap-[28px] items-start pt-6 sm:pt-12 pb-28 md:pb-16"
+                className="w-full max-w-2xl mx-auto flex flex-col items-center gap-[28px] pt-6 sm:pt-10 pb-16 relative z-30"
               >
-                {/* Left Column: Image with center-aligned "Offer new Image" button (moves below the button+ad on mobile while generating) */}
+                {/* Image Card with "Offer new Image" button ABOVE the image (moves below the loader+ad when generating) */}
                 <div
                   className={`relative group w-full rounded-2xl overflow-hidden shadow-xl bg-white/70 p-4 sm:p-5 flex flex-col justify-start ${
-                    loading || (result && !hasLandedOnRendition) ? 'order-2 md:order-1' : 'order-1'
+                    loading || (result && !hasLandedOnRendition) ? 'order-2' : 'order-1'
                   }`}
                 >
-                  <div className="relative w-full rounded-xl overflow-hidden flex items-start justify-center bg-stone-100/60">
-                    <img 
-                      src={image} 
-                      alt="Offered vision" 
-                      className="w-full max-h-[420px] object-contain rounded-lg object-top" 
-                    />
-                  </div>
-
-                  <div className="mt-3.5 flex items-center justify-center px-1">
+                  <div className="mb-3.5 flex items-center justify-center px-1">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -1105,38 +1062,45 @@ export default function App() {
                       <span>Offer new Image</span>
                     </button>
                   </div>
+
+                  <div className="relative w-full rounded-xl overflow-hidden flex items-start justify-center bg-stone-100/60">
+                    <img 
+                      src={image} 
+                      alt="Offered vision" 
+                      className="w-full max-h-[420px] object-contain rounded-lg object-top" 
+                    />
+                  </div>
                 </div>
 
-                {/* Right Column: Hidden on mobile before click (since mobile uses the true viewport-fixed bottom floating button); visible at the top on mobile & desktop once clicked */}
+                {/* Irshad Button (in Urdu) below the image card before click; moves to the top of the page as a focused loader when generating */}
                 <div
-                  className={`flex-col justify-between items-center text-center pt-1 sm:pt-2 ${
-                    loading || (result && !hasLandedOnRendition)
-                      ? 'flex order-1 md:order-2'
-                      : 'hidden md:flex order-2'
+                  className={`w-full flex flex-col items-center text-center relative z-30 ${
+                    loading || (result && !hasLandedOnRendition) ? 'order-1' : 'order-2'
                   }`}
                 >
-                  {/* Top button (Desktop idle button OR Mobile+Desktop top loader button with progress bar after click) */}
-                  <div className="w-full flex flex-col items-center relative z-20">
+                  <div className="w-full flex flex-col items-center relative z-30">
                     <button 
                       type="button"
                       onClick={handleIrshaad}
                       disabled={loading || Boolean(result && !hasLandedOnRendition)}
-                      className={`px-8 sm:px-10 py-3.5 sm:py-4 text-amber-300 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all flex flex-col items-center justify-center shadow-[0_14px_34px_rgba(0,0,0,0.48)] hover:shadow-2xl active:scale-95 ${
+                      className={`px-10 sm:px-12 py-3.5 sm:py-4 text-amber-300 rounded-full transition-all flex flex-col items-center justify-center shadow-[0_14px_34px_rgba(0,0,0,0.48)] hover:shadow-2xl active:scale-95 relative z-30 ${
                         loading || (result && !hasLandedOnRendition)
-                          ? 'bg-[#81314A] opacity-100 cursor-wait w-full max-w-[300px]'
-                          : 'bg-[#81314A] hover:bg-[#682439] cursor-pointer w-full md:w-auto'
+                          ? 'bg-[#81314A] opacity-100 cursor-wait w-full max-w-[340px]'
+                          : 'bg-[#81314A] hover:bg-[#682439] cursor-pointer w-full max-w-[260px]'
                       }`}
-                      aria-label="Irshad - Generate poetry from vision"
+                      aria-label="ارشاد... - Generate poetry from vision"
                     >
                       {loading || (result && !hasLandedOnRendition) ? (
                         <div className="w-full flex flex-col items-center gap-2">
-                          <div className="flex items-center justify-center gap-2.5">
+                          <div className="flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold tracking-widest uppercase">
                             {loading ? (
                               <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-amber-300 shrink-0" />
                             ) : (
                               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
                             )}
-                            <span>{loading ? 'Breathing Soul...' : 'Verse Composed'}</span>
+                            <span className="font-urdu font-bold text-lg sm:text-xl leading-none" dir="rtl">
+                              ارشاد...
+                            </span>
                             <span className="text-[11px] font-mono text-amber-200/90">
                               {poetryProgress}%
                             </span>
@@ -1151,15 +1115,30 @@ export default function App() {
                         </div>
                       ) : (
                         <div className="flex items-center justify-center gap-3">
-                          <Sparkles className="w-5 h-5 text-amber-300" />
-                          <span>Irshad</span>
+                          <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
+                          <span className="font-urdu font-bold text-xl sm:text-2xl text-amber-300 leading-none py-0.5" dir="rtl">
+                            ارشاد...
+                          </span>
                         </div>
                       )}
                     </button>
+
+                    {/* Poetic Loader Narrative when generating */}
+                    {(loading || (result && !hasLandedOnRendition)) && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-5 w-full max-w-xl rounded-2xl bg-white/85 border border-[#81314A]/25 px-5 py-4 shadow-md text-center"
+                      >
+                        <p className="font-serif italic text-xs sm:text-sm text-stone-800 leading-relaxed">
+                          Extracting the essence of your image, consulting the poetic tradition of the Indian subcontinent, and exploring the metaphors possible—balancing the meaning, tone, and rhythm of the poetry from the courts of the Mughal kings and the rich poetry of <strong className="font-semibold text-[#81314A] not-italic">Gulzar</strong>, <strong className="font-semibold text-[#81314A] not-italic">Kaifi Azmi</strong>, <strong className="font-semibold text-[#81314A] not-italic">Ghalib</strong>, and <strong className="font-semibold text-[#81314A] not-italic">Mir Taqi Mir</strong>, alongside contemporary Urdu poetry by modern poets across India and Pakistan...
+                        </p>
+                      </motion.div>
+                    )}
                   </div>
 
-                  {/* Advertisement displayed below the button with a clear spacing of 100px (mt-[100px]) */}
-                  {loading || (result && !hasLandedOnRendition) ? (
+                  {/* Advertisement displayed below the loader with a clear spacing of 100px (mt-[100px]) */}
+                  {(loading || (result && !hasLandedOnRendition)) && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -1241,32 +1220,22 @@ export default function App() {
                         </div>
                       </div>
                     </motion.div>
-                  ) : (
-                    /* Empty spacer when not generating so the Irshaad button remains comfortably positioned at the top on desktop */
-                    <div className="hidden md:block w-full h-8" />
                   )}
                 </div>
               </motion.div>
             ) : (
-            /* STATE 3: Recited Result. Left: Image & recitation audio. Right: Poetry and Sher */
+              /* STATE 3: Final Rendition Page. Image Card on top, Content Section below the image */
               <motion.div
                 key="result-view"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="grid grid-cols-1 md:grid-cols-12 gap-[24px] items-start w-full pt-8 sm:pt-12 pb-16"
+                className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto pt-8 sm:pt-12 pb-16 relative z-30"
               >
-                {/* Left Column: Image with center-aligned Offer new Image button */}
-                <div className="md:col-span-5 flex flex-col gap-6">
-                  <div className="relative group w-full rounded-2xl overflow-hidden shadow-2xl bg-white/60 p-2 sm:p-3 border border-natural-border/50">
-                    <div className="relative w-full rounded-xl overflow-hidden">
-                      <img 
-                        src={image} 
-                        alt="Vision" 
-                        className="w-full h-auto max-h-[400px] object-cover rounded-xl grayscale-[0.15] hover:grayscale-0 transition-all duration-500" 
-                      />
-                    </div>
-                    <div className="mt-2.5 flex items-center justify-center px-1">
+                {/* Top: Image Card with "Offer new Image" button ABOVE the image */}
+                <div className="w-full flex flex-col">
+                  <div className="relative group w-full rounded-2xl overflow-hidden shadow-2xl bg-white/60 p-3 sm:p-4 border border-natural-border/50">
+                    <div className="mb-3 flex items-center justify-center px-1">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
@@ -1277,13 +1246,20 @@ export default function App() {
                         <span>Offer new Image</span>
                       </button>
                     </div>
+                    <div className="relative w-full rounded-xl overflow-hidden flex items-center justify-center bg-stone-100/50">
+                      <img 
+                        src={image} 
+                        alt="Vision" 
+                        className="w-full h-auto max-h-[420px] object-contain rounded-xl transition-all duration-500" 
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Column: Control Icons Bar above Essence (Sher) and Verse (Nazm) */}
-                <div className="md:col-span-7 flex flex-col h-full py-1 sm:py-2 relative">
-                  {/* Top Control Icons Bar: Play, Edit Voice Type, and Download (left-aligned) | Share (right-aligned) */}
-                  <div className="flex items-center justify-between gap-3 pb-4 mb-6 border-b border-natural-border/50">
+                {/* Below Image: Content Section with Play, Voice Style, Download & Share buttons inside dark red circles, and 20px padding around the text */}
+                <div className="w-full flex flex-col relative">
+                  {/* Top Control Icons Bar: Play, Voice Style, Download (left) | Share (right) — all inside dark red circles */}
+                  <div className="flex items-center justify-between gap-3 pb-4 mb-2 border-b border-natural-border/50">
                     <div className="flex items-center gap-2.5">
                       {/* Play / Pause Icon */}
                       <button
@@ -1309,18 +1285,18 @@ export default function App() {
                         )}
                       </button>
 
-                      {/* Edit Voice Type Icon */}
+                      {/* Voice Style Icon inside dark red circle */}
                       <button
                         type="button"
                         onClick={() => setShowVoiceModal(true)}
-                        className="p-2.5 rounded-full bg-white/80 hover:bg-white text-[#81314A] border border-natural-border/70 hover:border-[#81314A] transition-all shadow-xs flex items-center justify-center active:scale-95 cursor-pointer"
-                        aria-label="Edit voice type"
-                        title={`Edit voice type (${voiceStyle} • ${voiceGender === 'male' ? 'Male' : 'Female'})`}
+                        className="p-2.5 bg-[#81314A] text-amber-300 rounded-full hover:bg-[#682439] transition-all shadow-md flex items-center justify-center active:scale-95 cursor-pointer"
+                        aria-label="Edit voice style"
+                        title={`Edit voice style (${voiceStyle} • ${voiceGender === 'male' ? 'Male' : 'Female'})`}
                       >
                         <Mic className="w-4 h-4" />
                       </button>
 
-                      {/* Download Icon */}
+                      {/* Download Icon inside dark red circle */}
                       <button
                         type="button"
                         onClick={() => {
@@ -1332,7 +1308,7 @@ export default function App() {
                             setShowVoiceModal(true);
                           }
                         }}
-                        className="p-2.5 rounded-full bg-white/80 hover:bg-white text-[#81314A] border border-natural-border/70 hover:border-[#81314A] transition-all shadow-xs flex items-center justify-center active:scale-95 cursor-pointer"
+                        className="p-2.5 bg-[#81314A] text-amber-300 rounded-full hover:bg-[#682439] transition-all shadow-md flex items-center justify-center active:scale-95 cursor-pointer"
                         aria-label="Download"
                         title={audioUrl ? "Download recitation audio (.wav)" : "Download"}
                       >
@@ -1340,7 +1316,7 @@ export default function App() {
                       </button>
                     </div>
 
-                    {/* Right-aligned Share Icon */}
+                    {/* Right-aligned Share Icon inside dark red circle */}
                     <button
                       type="button"
                       onClick={handleOpenSherModal}
@@ -1352,32 +1328,54 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Couplet: Urdu version (right-aligned) followed by Hindi version (left-aligned) */}
-                  <div className="mb-8 sm:mb-10 pb-8 border-b border-natural-border/50">
-                    <div className="urdu-text mb-4 text-[#1A1917] text-[20px] sm:text-[24px] md:text-[28px] text-right leading-[1.8]" dir="rtl">
-                      {result.sherUrdu}
+                  {/* Text Content Wrapper with 20px padding (p-[20px]) */}
+                  <div className="p-[20px] flex flex-col">
+                    {/* Couplet (Sher): Urdu text followed by English translation (no label, no background color box) */}
+                    <div className="mb-8 sm:mb-10 pb-8 border-b border-natural-border/50">
+                      <div className="urdu-text mb-4 text-[#1A1917] text-[20px] sm:text-[24px] md:text-[28px] text-right leading-[1.8]" dir="rtl">
+                        {result.sherUrdu}
+                      </div>
+                      <p className="font-serif text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
+                        {result.sherEnglish || result.sherHindi}
+                      </p>
                     </div>
-                    <p className="font-hindi text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
-                      {result.sherHindi}
-                    </p>
-                  </div>
 
-                  {/* Verse at the bottom (no scroll, same Hindi body font size as the poem above, title reduced by 10pt) */}
-                  <div className="flex-1 flex flex-col justify-start text-left">
-                    <h2 className="font-hindi font-bold [-webkit-text-stroke:0.55px_currentColor] [text-shadow:_0_0.4px_0_currentColor] text-[11pt] sm:text-[13pt] md:text-[26pt] leading-tight text-natural-ink mb-5">
-                      {result.title}
-                    </h2>
-                    <div className="space-y-4 sm:space-y-5 text-base sm:text-lg md:text-xl font-hindi font-normal text-natural-ink/90 leading-relaxed tracking-wide text-left">
-                      {result.poem.split('\n').map((line, i) => (
-                        <p key={i}>{line}</p>
-                      ))}
+                    {/* Longer Verse (Nazm): Urdu text followed directly below by unhidden English translation in the exact same English text styling */}
+                    <div className="flex-1 flex flex-col justify-start">
+                      <h2
+                        className="urdu-text font-bold text-[22px] sm:text-[26px] md:text-[30px] leading-[1.8] text-natural-ink mb-5 text-right"
+                        dir="rtl"
+                      >
+                        {result.title}
+                      </h2>
+                      <div
+                        className="space-y-4 sm:space-y-5 urdu-text text-[19px] sm:text-[22px] md:text-[25px] font-normal text-natural-ink/95 leading-[1.95] text-right mb-6"
+                        dir="rtl"
+                      >
+                        {(result.poemUrdu || result.poem).split('\n').filter(Boolean).map((line, i) => (
+                          <p key={i}>{line}</p>
+                        ))}
+                      </div>
+
+                      {result.poemEnglish && (
+                        <div className="space-y-3 pt-4 border-t border-natural-border/30">
+                          {result.titleEnglish && (
+                            <h3 className="font-serif font-semibold text-black text-base sm:text-lg md:text-xl tracking-wide text-left">
+                              {result.titleEnglish}
+                            </h3>
+                          )}
+                          <p className="font-serif text-black font-normal text-base sm:text-lg md:text-xl tracking-wide text-left leading-relaxed whitespace-pre-line">
+                            {result.poemEnglish}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </motion.div>
-          )}
-              </AnimatePresence>
-      </main>
+            )}
+          </AnimatePresence>
+        </main>
 
 
 
@@ -1435,23 +1433,10 @@ export default function App() {
               <div className="absolute -top-12 -right-12 w-48 h-48 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-2xl bg-amber-500/10 text-natural-accent border border-amber-500/20">
-                    <CandleIcon className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <h2 className="font-gotu text-2xl md:text-3xl font-bold [-webkit-text-stroke:0.55px_#81314A] [text-shadow:_0_0.5px_0_#81314A] text-[#81314A] leading-none">
-                        इरशाद...
-                      </h2>
-                      <span className="font-urdu font-bold text-xl md:text-2xl text-[#81314A]" dir="rtl">
-                        ارشاد...
-                      </span>
-                    </div>
-                    <p className="serif italic text-xs text-natural-muted mt-1">
-                      The Voice of Poetry &amp; Remembrance
-                    </p>
-                  </div>
+                <div className="flex items-center">
+                  <span className="font-urdu font-bold text-2xl md:text-3xl text-[#81314A] leading-none" dir="rtl">
+                    ارشاد...
+                  </span>
                 </div>
                 <button
                   onClick={() => setShowAbout(false)}
@@ -1464,10 +1449,10 @@ export default function App() {
 
               <div className="space-y-4 text-natural-ink text-sm leading-relaxed serif">
                 <p>
-                  <strong className="text-natural-accent font-semibold not-italic">"इरशाद"</strong> (Irshaad) is the traditional call of Urdu mushairas—an eager invitation from the gathering asking the poet to speak, illuminate, and give voice to the quiet spaces of the heart.
+                  <strong className="text-natural-accent font-semibold not-italic">"ارشاد"</strong> (Irshaad) is the traditional call of Urdu mushairas—an eager invitation from the gathering asking the poet to speak, illuminate, and give voice to the quiet spaces of the heart.
                 </p>
                 <p className="text-natural-muted text-xs md:text-sm">
-                  Just as a glowing candle (<em className="font-serif">शमा</em>) is placed before the poet in a mehfil, this canvas invites you to share an image and receive a reflective free-verse poem along with an evocative couplet (<em className="font-serif">शे'र</em>) in both Hindi and Nastaliq Urdu scripts, accompanied by the poet's authentic voice.
+                  Just as a glowing candle (<em className="font-serif">शमा</em>) is placed before the poet in a mehfil, this canvas invites you to share an image and receive a reflective free-verse poem along with an evocative couplet (<em className="font-serif">शे'र</em>) in Nastaliq Urdu script and English translation, accompanied by the poet's authentic voice.
                 </p>
                 <div className="p-3.5 rounded-2xl bg-white/60 border border-natural-border/50 text-xs italic text-natural-muted space-y-1">
                   <div className="flex items-center gap-1.5 text-natural-accent font-sans not-italic font-semibold text-[10px] uppercase tracking-wider">
@@ -1479,13 +1464,10 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-natural-border/60 flex items-center justify-between text-xs">
-                <span className="text-[10px] uppercase tracking-widest text-natural-muted/60">
-                  Quiet Whispers
-                </span>
+              <div className="mt-8 pt-4 border-t border-natural-border/60 flex items-center justify-center text-xs">
                 <button
                   onClick={() => setShowAbout(false)}
-                  className="px-5 py-2 bg-[#81314A] text-white rounded-full text-[10px] uppercase tracking-widest font-semibold hover:bg-[#682439] transition-colors shadow-sm cursor-pointer"
+                  className="px-6 py-2.5 bg-[#81314A] text-white rounded-full text-[10px] uppercase tracking-widest font-semibold hover:bg-[#682439] transition-colors shadow-sm cursor-pointer"
                 >
                   Return to Mehfil
                 </button>
@@ -1959,28 +1941,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Viewport-Fixed Floating Irshad Button: floats at the bottom of the screen above all content on the z-axis (z-[60]) before click */}
-      <AnimatePresence>
-        {image && !loading && !result && (
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ duration: 0.22 }}
-            className="fixed bottom-6 inset-x-0 z-[60] flex justify-center px-6 pointer-events-none md:hidden"
-          >
-            <button
-              type="button"
-              onClick={handleIrshaad}
-              className="pointer-events-auto px-10 py-4 bg-[#81314A] hover:bg-[#682439] text-amber-300 rounded-full text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all flex items-center justify-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,0.55)] ring-2 ring-white/25 active:scale-95 cursor-pointer w-full max-w-[280px]"
-              aria-label="Irshad - Generate poetry from vision"
-            >
-              <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
-              <span>Irshad</span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Voice Selection Modal Dialog (Invoked once poetry is generated) */}
       <AnimatePresence>
@@ -2131,20 +2091,22 @@ export default function App() {
       {/* White Vector Jali Wooden Paneling Pattern above the Footer */}
       <JaliWoodenPanelPattern />
 
-      {/* Elegant Footer with Compliance Links below the Jaali */}
-      <footer className="w-full pt-4 pb-5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-xs text-natural-muted font-sans z-10 select-none">
-        <span className="font-gotu text-stone-700">इरशाद... • irshad.live</span>
-        <span className="hidden sm:inline text-stone-300">•</span>
+      {/* Elegant Footer below the Jaali: Left = About, Center = Small Urdu Irshad logo with three dots on both sides, Right = Privacy Policy */}
+      <footer className="w-full pt-4 pb-5 flex items-center justify-between px-4 sm:px-8 text-xs text-natural-muted font-sans z-10 select-none">
         <button 
           onClick={() => setShowAbout(true)} 
-          className="hover:text-[#81314A] transition-colors cursor-pointer"
+          className="hover:text-[#81314A] transition-colors cursor-pointer font-medium"
         >
-          About &amp; Mehfil
+          About
         </button>
-        <span className="text-stone-300">•</span>
+
+        <span className="font-urdu font-bold text-base sm:text-lg text-[#81314A] leading-none" dir="rtl">
+          ...ارشاد...
+        </span>
+
         <button 
           onClick={() => setShowPrivacy(true)} 
-          className="hover:text-[#81314A] transition-colors cursor-pointer"
+          className="hover:text-[#81314A] transition-colors cursor-pointer font-medium"
         >
           Privacy Policy
         </button>
