@@ -145,3 +145,9 @@
   animation: flameHalo 2.2s ease-in-out infinite;
 }
 
+/* Collapse AdSense unit cleanly if Google returns unfilled so fallback card displays without blank space */
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
+}
+
+

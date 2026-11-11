@@ -348,10 +348,13 @@ export default function App() {
   const [copiedNotice, setCopiedNotice] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [activeAdIndex, setActiveAdIndex] = useState(0);
+  const [adRenderKey, setAdRenderKey] = useState(0);
+  const [adFilled, setAdFilled] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const adInsRef = useRef<HTMLModElement | null>(null);
   const [headerHeight, setHeaderHeight] = useState(132);
 
   // Continuously track real rendered header height including async font loading
@@ -406,18 +409,43 @@ export default function App() {
   }, [loading]);
 
   const currentAd = CULTURAL_ADS[activeAdIndex] || CULTURAL_ADS[0];
+  const isGenerationSlotVisible = loading || Boolean(result && !hasLandedOnRendition);
 
-  // Safely request ad refresh from Google AdSense during poetry generation
+  // Request live Google AdSense unit (slot 7749235644) once the generation ad container mounts with non-zero width
   useEffect(() => {
-    if (loading) {
-      try {
-        // @ts-expect-error Google AdSense global
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch {
-        // Safe fallback in environments without live Google AdSense
+    if (!isGenerationSlotVisible) return;
+
+    let observer: MutationObserver | null = null;
+    const timer = window.setTimeout(() => {
+      const insEl = adInsRef.current;
+      if (!insEl) return;
+
+      const syncAdStatus = () => {
+        const status = insEl.getAttribute('data-ad-status');
+        if (status === 'filled') {
+          setAdFilled(true);
+        }
+      };
+
+      observer = new MutationObserver(syncAdStatus);
+      observer.observe(insEl, { attributes: true, attributeFilter: ['data-ad-status'] });
+
+      if (!insEl.getAttribute('data-adsbygoogle-status')) {
+        try {
+          // @ts-expect-error Google AdSense global
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch {
+          // Safe fallback in environments or browsers blocking Google AdSense
+        }
       }
-    }
-  }, [loading]);
+      syncAdStatus();
+    }, 100);
+
+    return () => {
+      window.clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
+  }, [isGenerationSlotVisible, adRenderKey]);
 
   const reset = () => {
     setImage(null);
@@ -534,6 +562,8 @@ export default function App() {
 
   const handleIrshaad = async () => {
     if (!image) return;
+    setAdFilled(false);
+    setAdRenderKey((prev) => prev + 1);
     setLoading(true);
     setPoetryProgress(10);
     setHasLandedOnRendition(false);
@@ -1147,77 +1177,91 @@ export default function App() {
                       <div className="w-full max-w-md rounded-xl overflow-hidden border border-natural-border/80 bg-white/95 p-3.5 shadow-md flex flex-col text-left">
                         <div className="flex items-center justify-between w-full pb-2 mb-2 border-b border-natural-border/40 px-0.5">
                           <span className="text-[9px] uppercase tracking-widest text-natural-muted font-sans font-semibold">
-                            साहित्यिक विज्ञापन • Cultural Partner
+                            {adFilled ? 'विज्ञापन • Advertisement' : 'साहित्यिक विज्ञापन • Cultural Partner'}
                           </span>
-                          <span className="text-[9px] text-amber-800/90 bg-amber-50 px-2 py-0.5 rounded font-sans font-medium border border-amber-200/60">
-                            {currentAd.categoryLabelHindi}
-                          </span>
+                          {!adFilled && (
+                            <span className="text-[9px] text-amber-800/90 bg-amber-50 px-2 py-0.5 rounded font-sans font-medium border border-amber-200/60">
+                              {currentAd.categoryLabelHindi}
+                            </span>
+                          )}
                         </div>
 
-                        {/* Google AdSense Responsive Unit with Cultural Keywords & Targeting */}
+                        {/* Google AdSense Responsive Display Ad Unit (Slot 7749235644) */}
                         <div className="w-full relative overflow-hidden rounded-lg bg-stone-50/90 border border-natural-border/60 p-3 text-left">
-                          <ins 
+                          <ins
+                            key={adRenderKey}
+                            ref={adInsRef}
                             className="adsbygoogle"
-                            style={{ display: 'block' }}
+                            style={{ display: 'block', width: '100%' }}
                             data-ad-client="ca-pub-8859410334476721"
+                            data-ad-slot="7749235644"
                             data-ad-format="auto"
                             data-full-width-responsive="true"
                           />
 
-                          {/* Curated Urdu/Hindi Poetry Festival, Book & Cultural Brand Showcase */}
-                          <div className="flex flex-col gap-2">
-                            <div className="flex items-start justify-between gap-2">
-                              <div>
-                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-natural-accent bg-natural-accent/10 px-2 py-0.5 rounded-full mb-1">
-                                  {currentAd.category === 'book' ? (
-                                    <BookOpen className="w-3 h-3" />
-                                  ) : (
-                                    <Calendar className="w-3 h-3" />
-                                  )}
-                                  {currentAd.categoryLabel}
+                          {/* Fallback Cultural Showcase (automatically hidden as soon as Google AdSense fills slot 7749235644) */}
+                          {!adFilled && (
+                            <a
+                              href={currentAd.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex flex-col gap-2 group"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-natural-accent bg-natural-accent/10 px-2 py-0.5 rounded-full mb-1">
+                                    {currentAd.category === 'book' ? (
+                                      <BookOpen className="w-3 h-3" />
+                                    ) : (
+                                      <Calendar className="w-3 h-3" />
+                                    )}
+                                    {currentAd.categoryLabel}
+                                  </span>
+                                  <h4 className="text-sm sm:text-base font-serif font-bold text-natural-ink leading-snug group-hover:text-[#81314A] transition-colors">
+                                    {currentAd.title}
+                                  </h4>
+                                </div>
+                                <span className="urdu-text text-base text-stone-700 leading-none shrink-0" dir="rtl">
+                                  {currentAd.titleUrdu}
                                 </span>
-                                <h4 className="text-sm sm:text-base font-serif font-bold text-natural-ink leading-snug">
-                                  {currentAd.title}
-                                </h4>
                               </div>
-                              <span className="urdu-text text-base text-stone-700 leading-none shrink-0" dir="rtl">
-                                {currentAd.titleUrdu}
-                              </span>
-                            </div>
 
-                            <p className="text-xs font-serif text-natural-ink/80 leading-relaxed italic">
-                              {currentAd.subtitle}
-                            </p>
+                              <p className="text-xs font-serif text-natural-ink/80 leading-relaxed italic">
+                                {currentAd.subtitle}
+                              </p>
 
-                            <div className="flex items-center justify-between pt-1.5 text-[10px] text-natural-muted border-t border-stone-200/60 mt-0.5">
-                              <span className="font-medium text-stone-600 truncate max-w-[210px]">
-                                ✦ {currentAd.highlight}
-                              </span>
-                              <span className="font-sans font-semibold text-natural-accent hover:underline flex items-center gap-0.5 shrink-0">
-                                {currentAd.linkText}
-                                <ExternalLink className="w-2.5 h-2.5" />
-                              </span>
-                            </div>
-                          </div>
+                              <div className="flex items-center justify-between pt-1.5 text-[10px] text-natural-muted border-t border-stone-200/60 mt-0.5">
+                                <span className="font-medium text-stone-600 truncate max-w-[210px]">
+                                  ✦ {currentAd.highlight}
+                                </span>
+                                <span className="font-sans font-semibold text-natural-accent group-hover:underline flex items-center gap-0.5 shrink-0">
+                                  {currentAd.linkText}
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </span>
+                              </div>
+                            </a>
+                          )}
                         </div>
 
-                        {/* Explicit limitation notice & pagination dots */}
-                        <div className="mt-2 pt-1 flex items-center justify-between px-0.5 text-[9px] text-natural-muted/75 font-sans">
-                          <span>Limited to Urdu/Hindi poetry festivals, books & cultural brands</span>
-                          <div className="flex items-center gap-1">
-                            {CULTURAL_ADS.map((_, idx) => (
-                              <button
-                                key={idx}
-                                type="button"
-                                onClick={() => setActiveAdIndex(idx)}
-                                className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
-                                  idx === activeAdIndex ? 'bg-natural-accent w-3' : 'bg-stone-300'
-                                }`}
-                                title={`View ${CULTURAL_ADS[idx].title}`}
-                              />
-                            ))}
+                        {/* Fallback pagination dots (hidden when live Google AdSense unit is filled) */}
+                        {!adFilled && (
+                          <div className="mt-2 pt-1 flex items-center justify-between px-0.5 text-[9px] text-natural-muted/75 font-sans">
+                            <span>Limited to Urdu/Hindi poetry festivals, books &amp; cultural brands</span>
+                            <div className="flex items-center gap-1">
+                              {CULTURAL_ADS.map((_, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => setActiveAdIndex(idx)}
+                                  className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
+                                    idx === activeAdIndex ? 'bg-natural-accent w-3' : 'bg-stone-300'
+                                  }`}
+                                  title={`View ${CULTURAL_ADS[idx].title}`}
+                                />
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
